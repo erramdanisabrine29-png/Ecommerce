@@ -12,11 +12,7 @@ return new class extends Migration
             $table->id('id_customer');
 
             // FK -> user
-            $table->unsignedBigInteger('id_user');
-            $table->foreign('id_user')
-                  ->references('id_user')
-                  ->on('users')
-                  ->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadOnDelete();
 
             $table->string('last_name_customer')->nullable();
             $table->string('first_name_customer')->nullable();

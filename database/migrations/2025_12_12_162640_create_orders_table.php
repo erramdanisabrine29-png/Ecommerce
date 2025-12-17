@@ -11,12 +11,11 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id('id_order');
 
-            $table->unsignedBigInteger('id_site');
-            $table->foreign('id_site')->references('id_site')->on('sites')->onDelete('cascade');
+        //     $table->foreignId('id_site')->constrained()->cascadOnDelete();
 
-            $table->unsignedBigInteger('id_customer');
-            $table->foreign('id_customer')->references('id_customer')->on('customers')->onDelete('cascade');
-
+        //    $table->foreignId('id_customer')->constrained()->cascadOnDelete();
+            $table->foreignId('id_site')->references('id_site')->on('sites');
+            $table->foreignId('id_customer')->references('id_customer')->on('customers');
             $table->string('reference');
             $table->string('channel')->nullable();
 

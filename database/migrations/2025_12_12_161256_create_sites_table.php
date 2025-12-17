@@ -12,11 +12,7 @@ return new class extends Migration
             $table->id('id_site');
 
             // Foreign key -> merchant
-            $table->unsignedBigInteger('id_merchant');
-            $table->foreign('id_merchant')
-                  ->references('id_merchant')
-                  ->on('merchants')
-                  ->onDelete('cascade');
+            $table->foreignId('id_merchant')->references('id_merchant')->on('merchants')->cascadeOnDelete();
 
             $table->string('site_name');
             $table->string('site_url');

@@ -11,12 +11,11 @@ return new class extends Migration
         Schema::create('order_lines', function (Blueprint $table) {
             $table->id('id_line');
 
-            $table->unsignedBigInteger('id_order');
-            $table->foreign('id_order')->references('id_order')->on('orders')->onDelete('cascade');
+            // $table->foreignId('id_order')->constrained()->cascadOnDelete();
 
-            $table->unsignedBigInteger('id_product');
-            $table->foreign('id_product')->references('id_product')->on('products')->onDelete('cascade');
-
+            // $table->foreignId('id_product')->constrained()->cascadOnDelete();
+            $table->foreignId('id_order')->references('id_order')->on('orders')->cascadeOnDelete();
+            $table->foreignId('id_product')->references('id_product')->on('products');
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('total_price', 10, 2);

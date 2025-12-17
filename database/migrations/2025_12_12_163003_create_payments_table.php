@@ -11,15 +11,14 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id('id_payment');
 
-            $table->unsignedBigInteger('id_order');
-            $table->foreign('id_order')->references('id_order')->on('orders')->onDelete('cascade');
-
+            // $table->foreignId('id_order')->constrained()->cascadOnDelete();
+            $table->foreignId('id_order')->references('id_order')->on('orders')->cascadeOnDelete();
             $table->string('reference')->nullable();
             $table->string('method')->nullable();
             $table->string('payment_status')->nullable();
 
             $table->decimal('amount', 10, 2);
-            $table->string('currency')->default('EUR');
+            $table->string('currency');
 
             $table->dateTime('paid_at')->nullable();
             $table->string('paypal_transaction')->nullable();

@@ -11,11 +11,8 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id('id_product');
 
-            $table->unsignedBigInteger('id_merchant');
-            $table->foreign('id_merchant')
-                  ->references('id_merchant')
-                  ->on('merchants')
-                  ->onDelete('cascade');
+            $table->foreignId('id_merchant')->references('id_merchant')->on('merchants')->cascadeOnDelete();
+
 
             $table->string('reference')->nullable();
             $table->string('variant_reference')->nullable();
