@@ -23,10 +23,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        // "role",
-        // "active",
-        // "language",
-        // "timezone",
+        "role",
+        "active",
+        "language",
+        "timezone",
     ];
 
     /**
