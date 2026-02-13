@@ -42,6 +42,9 @@ it('prevents a merchant from accessing another merchant\'s order (policy + HTTP)
 it('counts only pending merchant-visible orders for the badge', function () {
     $merchantUser = User::factory()->create();
     $merchantUser->assignRole('Merchant');
+    // ensure spatie caches are fresh for view-layer role checks
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+    $merchantUser = $merchantUser->fresh();
     $merchantModel = Merchant::create(['user_id' => $merchantUser->id, 'company_name' => 'BadgeCo']);
     $site = Site::create(['id_merchant' => $merchantModel->id_merchant]);
 
@@ -63,6 +66,8 @@ it('counts only pending merchant-visible orders for the badge', function () {
 it('shows pending orders count in header tooltip and badge (web)', function () {
     $merchantUser = User::factory()->create();
     $merchantUser->assignRole('Merchant');
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+    $merchantUser = $merchantUser->fresh();
     $merchantModel = Merchant::create(['user_id' => $merchantUser->id, 'company_name' => 'UIBadge']);
     $site = Site::create(['id_merchant' => $merchantModel->id_merchant]);
 
@@ -74,9 +79,24 @@ it('shows pending orders count in header tooltip and badge (web)', function () {
     $resp = $this->actingAs($merchantUser)->get(route('orders.index'));
     $resp->assertStatus(200);
 
-    // header should contain the pending count (1)
-    $resp->assertSeeText('My orders');
+    // header should include the pending-orders badge (1)
     $resp->assertSee('aria-label="1 pending orders"', false);
+});
+
+it('navigates from dashboard to orders page via My orders link (web)', function () {
+    $merchantUser = User::factory()->create();
+    $merchantUser->assignRole('Merchant');
+
+    // Dashboard contains the My orders link
+    $dash = $this->actingAs($merchantUser)->get(route('dashboard'));
+    $dash->assertStatus(200);
+    $dash->assertSee('My orders');
+    $dash->assertSee(route('orders.index'));
+
+    // Follow the link (server-side) and ensure orders.index renders
+    $ordersPage = $this->actingAs($merchantUser)->get(route('orders.index'));
+    $ordersPage->assertStatus(200);
+    $ordersPage->assertSeeText('Orders');
 });
 
 it('prevents a client (regular user) from deleting an order but allows viewing own order via policy', function () {

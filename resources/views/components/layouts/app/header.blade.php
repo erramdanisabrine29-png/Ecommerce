@@ -23,7 +23,7 @@
                 <flux:tooltip :content="__('Search')" position="bottom">
                     <flux:navbar.item class="!h-10 [&>div>svg]:size-5" icon="magnifying-glass" href="#" :label="__('Search')" />
                 </flux:tooltip>
-                @role('Merchant')
+                @if(auth()->check() && auth()->user()->can('orders.read'))
                     @php $__ordersCount = \App\Models\Order::countForMerchant(auth()->id() ?? null); @endphp
                     {{-- Tooltip now shows pending-order count (badge reflects pending orders only) --}}
                     <flux:tooltip :content="__('My orders') . ' — ' . $__ordersCount . ' ' . __('pending')" position="bottom">
@@ -39,7 +39,7 @@
                             @endif
                         </flux:navbar.item>
                     </flux:tooltip>
-                @endrole
+                @endif
                 <flux:tooltip :content="__('My stores')" position="bottom">
                     <flux:navbar.item
                         class="h-10 max-lg:hidden [&>div>svg]:size-5"
@@ -124,7 +124,7 @@
             <flux:spacer />
 
             <flux:navlist variant="outline">
-                @role('Merchant')
+                @if(auth()->check() && auth()->user()->can('orders.read'))
                     @php $__ordersCountMobile = \App\Models\Order::countForMerchant(auth()->id() ?? null); @endphp
                     <flux:navlist.item icon="shopping-cart" :href="route('orders.index')" wire:navigate title="{{ __('My orders') }} — {{ $__ordersCountMobile }} {{ __('pending') }}">
                         <div class="flex items-center justify-between w-full">
@@ -134,7 +134,7 @@
                             @endif
                         </div>
                     </flux:navlist.item>
-                @endrole
+                @endif
                 <flux:navlist.item icon="building-storefront" :href="route('stores.index')" wire:navigate>
                     {{ __('My stores') }}
                 </flux:navlist.item>
