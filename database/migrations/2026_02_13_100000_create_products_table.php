@@ -30,7 +30,11 @@ return new class extends Migration
             $table->index('store_id');
             $table->index('stock');
             $table->index('created_at');
-            $table->fullText(['name', 'description']);
+            // fullText indexes aren't supported by the in-memory sqlite driver used in tests;
+            // only create the fulltext index on drivers that support it (e.g. MySQL/Postgres).
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->fullText(['name', 'description']);
+            }
         });
     }
 
