@@ -11,6 +11,22 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("You're logged in!") }}
                 </div>
+                @role('Merchant')
+                    <div class="p-6 border-t dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900 flex items-center justify-between gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Quick actions') }}</p>
+                            <p class="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">{{ __('Manage your orders') }}</p>
+                        </div>
+                        @php $pending = \\App\\Models\\Order::countForMerchant(auth()->id() ?? null); @endphp
+                        <a href="{{ route('orders.index') }}" class="inline-flex items-center gap-3 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded shadow" role="button" aria-label="{{ $pending }} pending orders">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9"/></svg>
+                            <span>{{ __('My orders') }}</span>
+                            @if($pending > 0)
+                                <span class="inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs font-semibold w-5 h-5">{{ $pending }}</span>
+                            @endif
+                        </a>
+                    </div>
+                @endrole
             </div>
         </div>
     </div>
