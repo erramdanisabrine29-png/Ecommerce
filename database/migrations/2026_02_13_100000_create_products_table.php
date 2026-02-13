@@ -11,6 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // If an earlier migration already created `products` (duplicate in repo),
+        // skip to avoid "table already exists" during tests (keeps migrations idempotent).
+        if (Schema::hasTable('products')) {
+            return;
+        }
+
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
