@@ -1,91 +1,65 @@
-<x-layouts.app>
-
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Mes Magasins</h1>
-        <a href="{{ route('stores.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            + Créer un magasin
-        </a>
-    </div>
-
-    @if ($message = Session::get('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            {{ $message }}
+<x-app-layout>
+    <div class="p-6 lg:p-8">
+        <div class="flex justify-between items-center mb-6">
+            <flux:heading size="xl">{{ __('Stores') }}</flux:heading>
+            @can('stores.create')
+            <flux:button :href="route('stores.create')" variant="primary" wire:navigate>{{ __('Create store') }}</flux:button>
+            @endcan
         </div>
-    @endif
 
-    @if ($stores->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach ($stores as $store)
-                <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ $store->name }}</h2>
+        @if(session('success'))
+            <flux:card class="mb-6 !border-green-500 !bg-green-50 dark:!bg-green-950/30">
+                <p class="text-green-700 dark:text-green-400 text-sm">{{ session('success') }}</p>
+            </flux:card>
+        @endif
 
-                    <div class="space-y-3 mb-4 text-sm text-gray-700">
-                        <p><strong>URL:</strong> <a href="{{ $store->url }}" target="_blank" class="text-blue-600 hover:underline">{{ $store->url }}</a></p>
-                        <p><strong>SSL:</strong> 
-                            <span class="px-2 py-1 rounded text-xs font-semibold
-                                @if($store->ssl_certificate_status === 'active') bg-green-100 text-green-800
-                                @elseif($store->ssl_certificate_status === 'expired') bg-red-100 text-red-800
-                                @else bg-yellow-100 text-yellow-800 @endif">
-                                {{ ucfirst($store->ssl_certificate_status) }}
-                            </span>
-                        </p>
-                        <p><strong>TVA:</strong> {{ $store->tax_rate }}%</p>
-                        <p><strong>Stock min:</strong> {{ $store->minimum_stock }} unités</p>
-                    </div>
-
-                    <div class="bg-gray-50 p-3 rounded mb-4 border border-gray-300">
-                        <p class="text-xs text-gray-600 mb-1">Clé API</p>
-                        <div class="flex items-center gap-2">
-                            <code class="text-xs bg-gray-200 px-2 py-1 rounded flex-grow font-mono overflow-auto">{{ $store->api_key }}</code>
-                            <button onclick="copyToClipboard('{{ $store->api_key }}')" class="text-blue-600 hover:text-blue-800 text-sm">
-                                Copier
-                            </button>
+        @if($stores->count() > 0)
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($stores as $store)
+                    <flux:card class="flex flex-col">
+                        <flux:heading size="lg" class="mb-3">{{ $store->name }}</flux:heading>
+                        <div class="space-y-2 text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+                            <p><strong class="text-zinc-800 dark:text-zinc-200">{{ __('URL') }}:</strong> <a href="{{ $store->url }}" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">{{ Str::limit($store->url, 40) }}</a></p>
+                            <p><strong class="text-zinc-800 dark:text-zinc-200">{{ __('SSL') }}:</strong>
+                                <flux:badge :color="$store->ssl_certificate_status === 'active' ? 'green' : ($store->ssl_certificate_status === 'expired' ? 'red' : 'yellow')" size="sm">
+                                    {{ ucfirst($store->ssl_certificate_status) }}
+                                </flux:badge>
+                            </p>
+                            <p><strong class="text-zinc-800 dark:text-zinc-200">{{ __('Tax rate') }}:</strong> {{ $store->tax_rate }}%</p>
+                            <p><strong class="text-zinc-800 dark:text-zinc-200">{{ __('Min. stock') }}:</strong> {{ $store->minimum_stock }}</p>
                         </div>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <a href="{{ route('stores.show', $store) }}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded text-center text-sm">
-                            Voir
-                        </a>
-                        <a href="{{ route('stores.products', $store) }}" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-3 rounded text-center text-sm">
-                            Mes produits
-                        </a>
-                        <a href="{{ route('stores.edit', $store) }}" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-3 rounded text-center text-sm">
-                            Éditer
-                        </a>
-                        <form action="{{ route('stores.destroy', $store) }}" method="POST" class="flex-1" onsubmit="return confirm('Êtes-vous sûr?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 rounded text-sm">
-                                Supprimer
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        <!-- Pagination -->
-        <div class="mt-8">
-            {{ $stores->links() }}
-        </div>
-    @else
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
-            <p class="text-gray-700 mb-4">Vous n'avez aucun magasin.</p>
-            <a href="{{ route('stores.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Créer votre premier magasin
-            </a>
-        </div>
-    @endif
-</div>
-
-<script>
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert('Clé API copiée!');
-    });
-}
-</script>
-
-</x-layouts.app>
+                        <div class="bg-zinc-100 dark:bg-white/10 p-3 rounded-lg mb-4">
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-1">{{ __('API Key') }}</p>
+                            <div class="flex items-center gap-2">
+                                <code class="text-xs font-mono flex-1 truncate bg-zinc-200 dark:bg-white/10 px-2 py-1 rounded">{{ $store->api_key }}</code>
+                                <flux:button type="button" size="sm" variant="ghost" data-copy="{{ $store->api_key }}" onclick="navigator.clipboard.writeText(this.getAttribute('data-copy')).then(()=>alert('{{ __('API key copied') }}'))">{{ __('Copy') }}</flux:button>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-auto">
+                            <flux:button :href="route('stores.show', $store)" size="sm" variant="primary" wire:navigate>{{ __('View') }}</flux:button>
+                            @can('stores.update')
+                            <flux:button :href="route('stores.edit', $store)" size="sm" variant="outline" wire:navigate>{{ __('Edit') }}</flux:button>
+                            @endcan
+                            @can('stores.delete')
+                            <form action="{{ route('stores.destroy', $store) }}" method="POST" class="inline" onsubmit="return confirm('{{ __('Are you sure?') }}');">
+                                @csrf
+                                @method('DELETE')
+                                <flux:button type="submit" size="sm" variant="danger">{{ __('Delete') }}</flux:button>
+                            </form>
+                            @endcan
+                        </div>
+                    </flux:card>
+                @endforeach
+            </div>
+            <div class="mt-6">{{ $stores->links() }}</div>
+        @else
+            <flux:card class="text-center py-12">
+                <flux:heading size="lg" class="mb-4">{{ __('No stores yet') }}</flux:heading>
+                <p class="text-zinc-600 dark:text-zinc-400 mb-6">{{ __('Create your first store to get started.') }}</p>
+                @can('stores.create')
+                <flux:button :href="route('stores.create')" variant="primary" wire:navigate>{{ __('Create store') }}</flux:button>
+                @endcan
+            </flux:card>
+        @endif
+    </div>
+</x-app-layout>

@@ -21,7 +21,7 @@ class StorePolicy
      */
     public function view(User $user, Store $store): bool
     {
-        return $user->id === $store->user_id;
+        return $user->hasRole('Administrator') || $user->id === $store->user_id;
     }
 
     /**
@@ -29,7 +29,7 @@ class StorePolicy
      */
     public function own(User $user, Store $store): bool
     {
-        return $user->id === $store->user_id;
+        return $user->hasRole('Administrator') || $user->id === $store->user_id;
     }
 
     /**
@@ -45,7 +45,7 @@ class StorePolicy
      */
     public function update(User $user, Store $store): bool
     {
-        return $user->id === $store->user_id;
+        return $user->hasRole('Administrator') || $user->id === $store->user_id;
     }
 
     /**
@@ -53,7 +53,7 @@ class StorePolicy
      */
     public function delete(User $user, Store $store): bool
     {
-        return $user->id === $store->user_id;
+        return $user->hasRole('Administrator') || $user->id === $store->user_id;
     }
 
     /**

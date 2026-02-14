@@ -1,18 +1,8 @@
-<!-- resources/views/admin/index.blade.php -->
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Admin Dashboard') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    Welcome Admin!
-                </div>
-            </div>
-        </div>
+    <div class="p-6 lg:p-8">
+        <flux:heading size="xl" class="mb-6">{{ __('Admin Dashboard') }}</flux:heading>
+        <flux:card>
+            <p class="text-zinc-600 dark:text-zinc-400">{{ __('Welcome to the admin area.') }}</p>
+        </flux:card>
     </div>
 </x-app-layout>

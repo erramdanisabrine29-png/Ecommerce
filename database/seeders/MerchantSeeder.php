@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class MerchantSeeder extends Seeder
 {
@@ -47,7 +48,7 @@ class MerchantSeeder extends Seeder
             );
 
             // Create or update merchant record
-            \DB::table('merchants')->updateOrInsert(
+            DB::table('merchants')->updateOrInsert(
                 ['user_id' => $user->id],
                 [
                     'company_name' => $merchantData['company_name'],

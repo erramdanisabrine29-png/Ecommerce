@@ -1,36 +1,36 @@
-<x-layouts.app>
-    <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 bg-white shadow-sm p-6 rounded-lg">
-            <form method="POST" action="{{ route('users.update', $user) }}">
+<x-app-layout>
+    <div class="p-6 lg:p-8">
+        <flux:heading size="xl" class="mb-6">{{ __('Edit user') }}</flux:heading>
+
+        <flux:card class="max-w-2xl">
+            <form method="POST" action="{{ route('users.update', $user) }}" class="space-y-6">
                 @csrf
                 @method('PUT')
 
-                <div class="mb-4">
-                    <label>Nom</label>
-                    <input type="text" name="name" value="{{ $user->name }}" class="w-full border rounded px-3 py-2" required>
-                </div>
+                @if($errors->any())
+                    <flux:card class="!border-red-500 !bg-red-50 dark:!bg-red-950/30">
+                        <ul class="list-disc list-inside text-red-700 dark:text-red-400 text-sm space-y-1">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </flux:card>
+                @endif
 
-                <div class="mb-4">
-                    <label>Email</label>
-                    <input type="email" name="email" value="{{ $user->email }}" class="w-full border rounded px-3 py-2" required>
-                </div>
+                <flux:input name="name" type="text" :label="__('Name')" :value="old('name', $user->name)" required />
+                <flux:input name="email" type="email" :label="__('Email')" :value="old('email', $user->email)" required />
 
-                <div class="mb-4">
-                    <label>Rôle</label>
-                    <select name="role" class="w-full border rounded px-3 py-2" required>
+                <flux:select name="role" :label="__('Role')" required>
                         @foreach($roles as $role)
-                            <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
-                                {{ $role->name }}
-                            </option>
+                            <option value="{{ $role->name }}" @selected($user->hasRole($role->name))>{{ $role->name }}</option>
                         @endforeach
-                    </select>
-                </div>
+                </flux:select>
 
-                <button type="submit"
-                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Mettre à jour
-                </button>
+                <div class="flex gap-3">
+                    <flux:button type="submit" variant="primary">{{ __('Update') }}</flux:button>
+                    <flux:button :href="route('users.index')" variant="ghost" wire:navigate>{{ __('Cancel') }}</flux:button>
+                </div>
             </form>
-        </div>
+        </flux:card>
     </div>
-</x-layouts.app>
+</x-app-layout>

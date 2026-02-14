@@ -1,203 +1,57 @@
-<x-layouts.app>
-<div class="container mx-auto px-4 py-8 max-w-2xl">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Create Product</h1>
-        <p class="text-gray-600 mt-2">Add a new product to your catalog</p>
+<x-app-layout>
+    <div class="p-6 lg:p-8">
+        <flux:heading size="xl" class="mb-2">{{ __('Create product') }}</flux:heading>
+        <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-6">{{ __('Add a new product to your catalog') }}</p>
+
+        <flux:card class="max-w-2xl">
+            <form method="POST" action="{{ route('products.store') }}" class="space-y-6" id="product-form">
+                @csrf
+
+                <flux:input name="product_name" type="text" :label="__('Product name')" :value="old('product_name')" required />
+                <flux:input name="reference" type="text" :label="__('Reference')" :value="old('reference')" placeholder="e.g. PROD-001" required />
+                <flux:textarea name="description" :label="__('Description')" rows="4">{{ old('description') }}</flux:textarea>
+
+                <flux:heading size="md" class="!mt-6">{{ __('Pricing') }}</flux:heading>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <flux:input id="price_excl_tax" name="price_excl_tax" type="number" step="0.01" :label="__('Price ex. tax (€)')" :value="old('price_excl_tax')" required />
+                    <flux:input id="tax" name="tax" type="number" step="0.01" min="0" max="100" :label="__('Tax rate (%)')" :value="old('tax', 20)" required />
+                </div>
+                <flux:input id="price_incl_tax" name="price_incl_tax" type="number" step="0.01" :label="__('Price inc. tax (€)')" :value="old('price_incl_tax')" required readonly />
+
+                <flux:heading size="md" class="!mt-6">{{ __('Stock') }}</flux:heading>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <flux:input name="available_stock" type="number" min="0" :label="__('Available stock')" :value="old('available_stock', 0)" required />
+                    <flux:input name="safety_stock" type="number" min="0" :label="__('Safety stock')" :value="old('safety_stock', 10)" required />
+                </div>
+
+                <flux:select name="unit" :label="__('Unit')" required>
+                    <option value="">{{ __('Select unit') }}</option>
+                    <option value="pcs" @selected(old('unit') === 'pcs')>{{ __('Piece(s)') }}</option>
+                    <option value="kg" @selected(old('unit') === 'kg')>{{ __('Kilogram(s)') }}</option>
+                    <option value="l" @selected(old('unit') === 'l')>{{ __('Liter(s)') }}</option>
+                    <option value="m" @selected(old('unit') === 'm')>{{ __('Meter(s)') }}</option>
+                    <option value="box" @selected(old('unit') === 'box')>{{ __('Box(es)') }}</option>
+                </flux:select>
+
+                <div class="flex gap-3">
+                    <flux:button type="submit" variant="primary">{{ __('Create product') }}</flux:button>
+                    <flux:button :href="route('products.index')" variant="ghost" wire:navigate>{{ __('Cancel') }}</flux:button>
+                </div>
+            </form>
+        </flux:card>
     </div>
-
-    <div class="bg-white rounded-lg shadow p-6">
-        <form method="POST" action="{{ route('products.store') }}">
-            @csrf
-
-            <!-- Product Name -->
-            <div class="mb-6">
-                <label for="product_name" class="block text-gray-700 font-medium mb-2">Product Name *</label>
-                <input 
-                    type="text" 
-                    id="product_name" 
-                    name="product_name" 
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('product_name') border-red-500 @enderror"
-                    value="{{ old('product_name') }}"
-                    required
-                >
-                @error('product_name')
-                    <span class="text-red-600 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <!-- Reference -->
-            <div class="mb-6">
-                <label for="reference" class="block text-gray-700 font-medium mb-2">Reference *</label>
-                <input 
-                    type="text" 
-                    id="reference" 
-                    name="reference" 
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('reference') border-red-500 @enderror"
-                    value="{{ old('reference') }}"
-                    required
-                    placeholder="e.g., PROD-001"
-                >
-                @error('reference')
-                    <span class="text-red-600 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <!-- Description -->
-            <div class="mb-6">
-                <label for="description" class="block text-gray-700 font-medium mb-2">Description</label>
-                <textarea 
-                    id="description" 
-                    name="description" 
-                    rows="4"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('description') border-red-500 @enderror"
-                >{{ old('description') }}</textarea>
-                @error('description')
-                    <span class="text-red-600 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <!-- Pricing Section -->
-            <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Pricing</h3>
-                
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="price_excl_tax" class="block text-gray-700 font-medium mb-2">Price HT (€) *</label>
-                        <input 
-                            type="number" 
-                            id="price_excl_tax" 
-                            name="price_excl_tax" 
-                            step="0.01"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('price_excl_tax') border-red-500 @enderror"
-                            value="{{ old('price_excl_tax') }}"
-                            required
-                            onchange="calculatePrice()"
-                        >
-                        @error('price_excl_tax')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="tax" class="block text-gray-700 font-medium mb-2">Tax Rate (%) *</label>
-                        <input 
-                            type="number" 
-                            id="tax" 
-                            name="tax" 
-                            step="0.01"
-                            min="0"
-                            max="100"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('tax') border-red-500 @enderror"
-                            value="{{ old('tax', 20) }}"
-                            required
-                            onchange="calculatePrice()"
-                        >
-                        @error('tax')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-
-                <div>
-                    <label for="price_incl_tax" class="block text-gray-700 font-medium mb-2">Price TTC (€) *</label>
-                    <input 
-                        type="number" 
-                        id="price_incl_tax" 
-                        name="price_incl_tax" 
-                        step="0.01"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('price_incl_tax') border-red-500 @enderror"
-                        value="{{ old('price_incl_tax') }}"
-                        required
-                        readonly
-                    >
-                    @error('price_incl_tax')
-                        <span class="text-red-600 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-            </div>
-
-            <!-- Stock Section -->
-            <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Stock Management</h3>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="available_stock" class="block text-gray-700 font-medium mb-2">Available Stock *</label>
-                        <input 
-                            type="number" 
-                            id="available_stock" 
-                            name="available_stock" 
-                            min="0"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('available_stock') border-red-500 @enderror"
-                            value="{{ old('available_stock', 0) }}"
-                            required
-                        >
-                        @error('available_stock')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="safety_stock" class="block text-gray-700 font-medium mb-2">Safety Stock *</label>
-                        <input 
-                            type="number" 
-                            id="safety_stock" 
-                            name="safety_stock" 
-                            min="0"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('safety_stock') border-red-500 @enderror"
-                            value="{{ old('safety_stock', 10) }}"
-                            required
-                        >
-                        @error('safety_stock')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            <!-- Unit -->
-            <div class="mb-6">
-                <label for="unit" class="block text-gray-700 font-medium mb-2">Unit *</label>
-                <select 
-                    id="unit" 
-                    name="unit"
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 @error('unit') border-red-500 @enderror"
-                    required
-                >
-                    <option value="">Select unit</option>
-                    <option value="pcs" {{ old('unit') === 'pcs' ? 'selected' : '' }}>Piece(s)</option>
-                    <option value="kg" {{ old('unit') === 'kg' ? 'selected' : '' }}>Kilogram(s)</option>
-                    <option value="l" {{ old('unit') === 'l' ? 'selected' : '' }}>Liter(s)</option>
-                    <option value="m" {{ old('unit') === 'm' ? 'selected' : '' }}>Meter(s)</option>
-                    <option value="box" {{ old('unit') === 'box' ? 'selected' : '' }}>Box(es)</option>
-                </select>
-                @error('unit')
-                    <span class="text-red-600 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <!-- Actions -->
-            <div class="flex gap-4">
-                <a href="{{ route('products.index') }}" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-6 rounded transition text-center">
-                    Cancel
-                </a>
-                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded transition">
-                    Create Product
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-function calculatePrice() {
-    const priceHT = parseFloat(document.getElementById('price_excl_tax').value) || 0;
-    const taxRate = parseFloat(document.getElementById('tax').value) || 0;
-    const priceTTC = priceHT * (1 + (taxRate / 100));
-    document.getElementById('price_incl_tax').value = priceTTC.toFixed(2);
-}
-
-// Calculate on page load
-calculatePrice();
-</script>
-</x-layouts.app>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function calc() {
+            var priceHT = parseFloat(document.getElementById('price_excl_tax')?.value) || 0;
+            var taxRate = parseFloat(document.getElementById('tax')?.value) || 0;
+            var priceTTC = priceHT * (1 + (taxRate / 100));
+            var inc = document.getElementById('price_incl_tax');
+            if (inc) inc.value = priceTTC.toFixed(2);
+        }
+        document.getElementById('price_excl_tax')?.addEventListener('input', calc);
+        document.getElementById('tax')?.addEventListener('input', calc);
+        calc();
+    });
+    </script>
+</x-app-layout>
