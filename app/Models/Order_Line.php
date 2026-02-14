@@ -1,19 +1,6 @@
 <?php
+// Deprecated filename kept for backward-compatibility in VCS history.
+// The PSR-4 correct model is `app/Models/OrderLine.php`.
+// Do not add code here — see `OrderLine.php` instead.
 
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-
-class OrderLine extends Model
-{
-    protected $primaryKey = 'id_line';
-
-    public function order() {
-        return $this->belongsTo(Order::class,'id_order');
-    }
-
-    public function product() {
-        return $this->belongsTo(Product::class,'id_product');
-    }
-}
 

@@ -17,7 +17,14 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call([
-            UserSeeder::class,
+            // Create roles & permissions first
+            \Database\Seeders\RolePermissionSeeder::class,
+            // Create admin user
+            adminSeeder::class,
+            // Create merchant users (new)
+            MerchantSeeder::class,
+            // Create products for each merchant
+            ProductSeeder::class,
         ]);
 
         

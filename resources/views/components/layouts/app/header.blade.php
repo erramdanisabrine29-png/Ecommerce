@@ -23,22 +23,39 @@
                 <flux:tooltip :content="__('Search')" position="bottom">
                     <flux:navbar.item class="!h-10 [&>div>svg]:size-5" icon="magnifying-glass" href="#" :label="__('Search')" />
                 </flux:tooltip>
-                <flux:tooltip :content="__('Repository')" position="bottom">
+                @role('Merchant')
+                    @php $__ordersCount = \App\Models\Order::countForMerchant(auth()->id() ?? null); @endphp
+                    {{-- Tooltip now shows pending-order count (badge reflects pending orders only) --}}
+                    <flux:tooltip :content="__('My orders') . ' — ' . $__ordersCount . ' ' . __('pending')" position="bottom">
+                        <flux:navbar.item
+                            class="h-10 max-lg:hidden [&>div>svg]:size-5 flex items-center gap-2"
+                            icon="shopping-cart"
+                            :href="route('orders.index')"
+                            wire:navigate
+                        >
+                            <span>{{ __('My orders') }}</span>
+                            @if($__ordersCount > 0)
+                                <span class="inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs font-semibold w-5 h-5" aria-label="{{ $__ordersCount }} {{ __('pending orders') }}">{{ $__ordersCount }}</span>
+                            @endif
+                        </flux:navbar.item>
+                    </flux:tooltip>
+                @endrole
+                <flux:tooltip :content="__('My stores')" position="bottom">
                     <flux:navbar.item
                         class="h-10 max-lg:hidden [&>div>svg]:size-5"
-                        icon="folder-git-2"
-                        href="https://github.com/laravel/livewire-starter-kit"
-                        target="_blank"
-                        :label="__('Repository')"
+                        icon="building-storefront"
+                        :href="route('stores.index')"
+                        :label="__('My stores')"
+                        wire:navigate
                     />
                 </flux:tooltip>
-                <flux:tooltip :content="__('Documentation')" position="bottom">
+                <flux:tooltip :content="__('My users')" position="bottom">
                     <flux:navbar.item
                         class="h-10 max-lg:hidden [&>div>svg]:size-5"
-                        icon="book-open-text"
-                        href="https://laravel.com/docs/starter-kits#livewire"
-                        target="_blank"
-                        label="Documentation"
+                        icon="users"
+                        :href="route('users.index')"
+                        :label="__('My users')"
+                        wire:navigate
                     />
                 </flux:tooltip>
             </flux:navbar>
@@ -107,12 +124,23 @@
             <flux:spacer />
 
             <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
+                @role('Merchant')
+                    @php $__ordersCountMobile = \App\Models\Order::countForMerchant(auth()->id() ?? null); @endphp
+                    <flux:navlist.item icon="shopping-cart" :href="route('orders.index')" wire:navigate title="{{ __('My orders') }} — {{ $__ordersCountMobile }} {{ __('pending') }}">
+                        <div class="flex items-center justify-between w-full">
+                            <span>{{ __('My orders') }}</span>
+                            @if($__ordersCountMobile > 0)
+                                <span class="inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs font-semibold w-5 h-5" aria-label="{{ $__ordersCountMobile }} {{ __('pending orders') }}">{{ $__ordersCountMobile }}</span>
+                            @endif
+                        </div>
+                    </flux:navlist.item>
+                @endrole
+                <flux:navlist.item icon="building-storefront" :href="route('stores.index')" wire:navigate>
+                    {{ __('My stores') }}
                 </flux:navlist.item>
 
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
+                <flux:navlist.item icon="users" :href="route('users.index')" wire:navigate>
+                    {{ __('My users') }}
                 </flux:navlist.item>
             </flux:navlist>
         </flux:sidebar>
