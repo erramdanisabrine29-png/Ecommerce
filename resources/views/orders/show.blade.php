@@ -1,49 +1,51 @@
-<x-layouts.app>
-<div class="container mx-auto px-4 py-8">
-    <div class="mb-6 flex justify-between items-start">
-        <div>
-            <h1 class="text-2xl font-bold">Order {{ $order->reference }}</h1>
-            <p class="text-sm text-gray-500">Status: <strong>{{ ucfirst($order->order_status) }}</strong></p>
+<x-app-layout>
+    <div class="p-6 lg:p-8">
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <flux:heading size="xl">{{ __('Order') }} {{ $order->reference }}</flux:heading>
+                <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ __('Status') }}: <flux:badge color="zinc" size="sm">{{ ucfirst($order->order_status) }}</flux:badge></p>
+            </div>
+            <div class="text-end text-sm">
+                <p class="font-semibold text-zinc-800 dark:text-zinc-200">€{{ number_format($order->total_amount, 2) }}</p>
+                <p class="text-zinc-600 dark:text-zinc-400">{{ __('Shipping') }}: €{{ number_format($order->shipping_amount ?? 0, 2) }}</p>
+            </div>
         </div>
-        <div class="text-right">
-            <p class="text-sm">Total: <span class="font-semibold">€{{ number_format($order->total_amount,2) }}</span></p>
-            <p class="text-sm">Shipping: €{{ number_format($order->shipping_amount ?? 0,2) }}</p>
-        </div>
-    </div>
 
-    <div class="bg-white rounded shadow p-4 mb-6">
-        <h3 class="font-semibold mb-2">Lines</h3>
-        <div class="space-y-2">
-            @foreach($order->lines as $line)
-                <div class="flex justify-between border-b pb-2">
-                    <div>
-                        <div class="font-medium">{{ $line->order_product_name ?? ('#'.$line->id_product) }}</div>
-                        <div class="text-xs text-gray-500">Ref: {{ $line->order_product_reference }}</div>
+        <flux:card class="mb-6">
+            <flux:heading size="lg" class="mb-4">{{ __('Order lines') }}</flux:heading>
+            <div class="space-y-4">
+                @foreach($order->lines as $line)
+                    <div class="flex justify-between items-start border-b border-zinc-200 dark:border-white/10 pb-4 last:border-0 last:pb-0">
+                        <div>
+                            <p class="font-medium text-zinc-800 dark:text-zinc-200">{{ $line->order_product_name ?? '#' . $line->id_product }}</p>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ __('Ref') }}: {{ $line->order_product_reference }}</p>
+                        </div>
+                        <div class="text-end">
+                            <p class="text-sm">{{ $line->quantity }} × €{{ number_format($line->unit_price, 2) }}</p>
+                            <p class="font-semibold text-zinc-800 dark:text-zinc-200">€{{ number_format($line->total_price, 2) }}</p>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <div>{{ $line->quantity }} × €{{ number_format($line->unit_price,2) }}</div>
-                        <div class="font-semibold">€{{ number_format($line->total_price,2) }}</div>
-                    </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
+        </flux:card>
+
+        <flux:card class="mb-6">
+            <flux:heading size="lg" class="mb-4">{{ __('Status history') }}</flux:heading>
+            <ul class="space-y-2 text-sm">
+                @foreach($order->statusHistory as $h)
+                    <li class="border border-zinc-200 dark:border-white/10 rounded-lg p-3">
+                        <p class="font-medium text-zinc-800 dark:text-zinc-200">{{ ucfirst($h->new_status) }} — {{ $h->created_at->diffForHumans() }}</p>
+                        @if($h->note)<p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{{ $h->note }}</p>@endif
+                    </li>
+                @endforeach
+            </ul>
+        </flux:card>
+
+        <div class="flex gap-3">
+            @can('orders.update')
+            <flux:button :href="route('orders.edit', $order)" variant="outline" wire:navigate>{{ __('Edit') }}</flux:button>
+            @endcan
+            <flux:button :href="route('orders.index')" variant="ghost" wire:navigate>{{ __('Back') }}</flux:button>
         </div>
     </div>
-
-    <div class="bg-white rounded shadow p-4 mb-6">
-        <h3 class="font-semibold mb-2">Status history</h3>
-        <ul class="text-sm space-y-2">
-            @foreach($order->statusHistory as $h)
-                <li class="border p-2 rounded">
-                    <div><strong>{{ ucfirst($h->new_status) }}</strong> — {{ $h->created_at->diffForHumans() }}</div>
-                    @if($h->note)<div class="text-xs text-gray-500">{{ $h->note }}</div>@endif
-                </li>
-            @endforeach
-        </ul>
-    </div>
-
-    <div class="flex gap-2">
-        <a href="{{ route('orders.edit', $order) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Edit</a>
-        <a href="{{ route('orders.index') }}" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">Back</a>
-    </div>
-</div>
-</x-layouts.app>
+</x-app-layout>

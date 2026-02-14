@@ -9,13 +9,15 @@ use Illuminate\Support\Facades\Auth;
 class StoreController extends Controller
 {
     /**
-     * Display a listing of the authenticated user's stores.
+     * Display a listing of the authenticated user's stores (or all for Administrator).
      */
     public function index()
     {
-        $stores = Store::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $this->authorize('viewAny', Store::class);
+        $query = Auth::user()->hasRole('Administrator')
+            ? Store::query()
+            : Store::where('user_id', Auth::id());
+        $stores = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('stores.index', compact('stores'));
     }
@@ -25,6 +27,7 @@ class StoreController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Store::class);
         return view('stores.create');
     }
 
@@ -33,6 +36,7 @@ class StoreController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Store::class);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'url' => 'required|url|unique:stores,url',
@@ -59,9 +63,7 @@ class StoreController extends Controller
      */
     public function show(Store $store)
     {
-        if ($store->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access to this store.');
-        }
+        $this->authorize('view', $store);
         return view('stores.show', compact('store'));
     }
 
@@ -70,9 +72,7 @@ class StoreController extends Controller
      */
     public function edit(Store $store)
     {
-        if ($store->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access to this store.');
-        }
+        $this->authorize('update', $store);
         return view('stores.edit', compact('store'));
     }
 
@@ -81,9 +81,7 @@ class StoreController extends Controller
      */
     public function update(Request $request, Store $store)
     {
-        if ($store->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access to this store.');
-        }
+        $this->authorize('update', $store);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -104,9 +102,7 @@ class StoreController extends Controller
      */
     public function destroy(Store $store)
     {
-        if ($store->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access to this store.');
-        }
+        $this->authorize('delete', $store);
         $name = $store->name;
         $store->delete();
 
@@ -119,9 +115,7 @@ class StoreController extends Controller
      */
     public function regenerateApiKey(Store $store)
     {
-        if ($store->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access to this store.');
-        }
+        $this->authorize('update', $store);
 
         $store->update([
             'api_key' => Store::generateUniqueApiKey(),
@@ -136,9 +130,7 @@ class StoreController extends Controller
      */
     public function getJson(Store $store)
     {
-        if ($store->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized access to this store.');
-        }
+        $this->authorize('view', $store);
 
         return response()->json([
             'id' => $store->id,

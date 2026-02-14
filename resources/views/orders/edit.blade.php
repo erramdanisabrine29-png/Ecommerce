@@ -1,39 +1,34 @@
-<x-layouts.app>
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-4">Edit Order {{ $order->reference }}</h1>
+<x-app-layout>
+    <div class="p-6 lg:p-8">
+        <flux:heading size="xl" class="mb-6">{{ __('Edit order') }} {{ $order->reference }}</flux:heading>
 
-    @if(session('error'))
-        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">{{ session('error') }}</div>
-    @endif
+        @if(session('error'))
+            <flux:card class="mb-6 !border-red-500 !bg-red-50 dark:!bg-red-950/30">
+                <p class="text-red-700 dark:text-red-400 text-sm">{{ session('error') }}</p>
+            </flux:card>
+        @endif
 
-    <form method="POST" action="{{ route('orders.update', $order) }}">
-        @csrf
-        @method('PUT')
+        <flux:card class="max-w-2xl">
+            <form method="POST" action="{{ route('orders.update', $order) }}" class="space-y-6">
+                @csrf
+                @method('PUT')
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Shipping Amount</label>
-                <input name="shipping_amount" value="{{ old('shipping_amount', $order->shipping_amount) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Discount</label>
-                <input name="discount" value="{{ old('discount', $order->discount) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-            </div>
-        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <flux:input name="shipping_amount" type="number" step="0.01" :label="__('Shipping amount')" :value="old('shipping_amount', $order->shipping_amount)" />
+                    <flux:input name="discount" type="number" step="0.01" :label="__('Discount')" :value="old('discount', $order->discount)" />
+                </div>
 
-        <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-700">Status</label>
-            <select name="order_status" class="mt-1 block w-48 rounded-md border-gray-300 shadow-sm">
-                @foreach(['pending','confirmed','preparing','shipped','delivered','cancelled','returned'] as $s)
-                    <option value="{{ $s }}" {{ $order->order_status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
-                @endforeach
-            </select>
-        </div>
+                <flux:select name="order_status" :label="__('Status')">
+                    @foreach(['pending','confirmed','preparing','shipped','delivered','cancelled','returned'] as $s)
+                        <option value="{{ $s }}" @selected($order->order_status === $s)>{{ ucfirst($s) }}</option>
+                    @endforeach
+                </flux:select>
 
-        <div class="mt-6 flex gap-2">
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save</button>
-            <a href="{{ route('orders.show', $order) }}" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">Cancel</a>
-        </div>
-    </form>
-</div>
-</x-layouts.app>
+                <div class="flex gap-3">
+                    <flux:button type="submit" variant="primary">{{ __('Save') }}</flux:button>
+                    <flux:button :href="route('orders.show', $order)" variant="ghost" wire:navigate>{{ __('Cancel') }}</flux:button>
+                </div>
+            </form>
+        </flux:card>
+    </div>
+</x-app-layout>

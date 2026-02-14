@@ -1,53 +1,37 @@
-<x-layouts.app>
-    <div class="py-6">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            @if($errors->any())
-                <div class="bg-red-100 text-red-800 p-2 rounded mb-4">
-                    <ul>
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+<x-app-layout>
+    <div class="p-6 lg:p-8">
+        <flux:heading size="xl" class="mb-6">{{ __('Create user') }}</flux:heading>
 
-            <form action="{{ route('users.store') }}" method="POST">
+        <flux:card class="max-w-2xl">
+            <form action="{{ route('users.store') }}" method="POST" class="space-y-6">
                 @csrf
 
-                <div class="mb-4">
-                    <label class="block text-gray-700">Nom</label>
-                    <input type="text" name="name" class="w-full border rounded px-3 py-2" required>
-                </div>
+                @if($errors->any())
+                    <flux:card class="!border-red-500 !bg-red-50 dark:!bg-red-950/30">
+                        <ul class="list-disc list-inside text-red-700 dark:text-red-400 text-sm space-y-1">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </flux:card>
+                @endif
 
-                <div class="mb-4">
-                    <label class="block text-gray-700">Email</label>
-                    <input type="email" name="email" class="w-full border rounded px-3 py-2" required>
-                </div>
+                <flux:input name="name" type="text" :label="__('Name')" :value="old('name')" required />
+                <flux:input name="email" type="email" :label="__('Email')" :value="old('email')" required />
+                <flux:input name="password" type="password" :label="__('Password')" required />
+                <flux:input name="password_confirmation" type="password" :label="__('Confirm password')" required />
 
-                <div class="mb-4">
-                    <label class="block text-gray-700">Mot de passe</label>
-                    <input type="password" name="password" class="w-full border rounded px-3 py-2" required>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700">Confirmer le mot de passe</label>
-                    <input type="password" name="password_confirmation" class="w-full border rounded px-3 py-2" required>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700">Rôle</label>
-                    <select name="role" class="w-full border rounded px-3 py-2" required>
+                <flux:select name="role" :label="__('Role')" required>
                         @foreach($roles as $role)
                             <option value="{{ $role->name }}">{{ $role->name }}</option>
                         @endforeach
-                    </select>
-                </div>
+                </flux:select>
 
-                <button type="submit"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Créer
-                </button>
+                <div class="flex gap-3">
+                    <flux:button type="submit" variant="primary">{{ __('Create') }}</flux:button>
+                    <flux:button :href="route('users.index')" variant="ghost" wire:navigate>{{ __('Cancel') }}</flux:button>
+                </div>
             </form>
-        </div>
+        </flux:card>
     </div>
-</x-layouts.app>
+</x-app-layout>

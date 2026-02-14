@@ -14,19 +14,16 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+
+                    @can('users.read')
+                    <flux:navlist.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                    @endcan
+
+                    @can('stores.read')
+                    <flux:navlist.item icon="building-storefront" :href="route('stores.index')" :current="request()->routeIs('stores.*')" wire:navigate>{{ __('Stores') }}</flux:navlist.item>
+                    @endcan
+
                 </flux:navlist.group>
-            </flux:navlist>
-
-            <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="building-storefront" :href="route('stores.index')" wire:navigate>
-                {{ __('My stores') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="users" :href="route('users.index')" wire:navigate>
-                {{ __('My users') }}
-                </flux:navlist.item>
             </flux:navlist>
 
             <!-- Desktop User Menu -->
