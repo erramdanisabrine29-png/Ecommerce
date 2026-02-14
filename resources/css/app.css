@@ -1,10 +1,8 @@
 /* Flux CSS (Livewire) */
 @import '../../vendor/livewire/flux/dist/flux.css';
 
-/* Tailwind directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 */
+@import "tailwindcss";
 
 /* Ici tu peux ajouter ton CSS perso valide */
 body {
