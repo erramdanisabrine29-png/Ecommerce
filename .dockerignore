@@ -1,0 +1,58 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE and editors
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Dependencies (will be installed fresh in container)
+node_modules
+vendor
+
+# Build artifacts (will be built in container)
+public/build
+public/hot
+bootstrap/ssr
+
+# Testing
+.phpunit.result.cache
+.phpunit.cache
+coverage
+tests
+
+# Development files
+.env
+.env.local
+.env.*.local
+.env.backup
+*.log
+
+# Laravel specific
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/public/*
+
+# Documentation
+*.md
+!README.md
+docs
+
+# Docker files (don't need to copy themselves)
+docker-compose*.yml
+
+# Misc
+*.lock
+!composer.lock
+!package-lock.json
+Makefile
+phpunit.xml
+pint.json
+eslint.config.js
+boost.json
