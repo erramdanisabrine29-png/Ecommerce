@@ -5,6 +5,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ShopifyController;
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/stores/{store}/applications', [StoreController::class, 'applications'])
+        ->name('stores.applications');
+
+    Route::get('/stores/{store}/applications/shopify', [StoreController::class, 'shopifyConfig'])
+        ->name('stores.shopify.config');
+
+    Route::post('/stores/{store}/applications/shopify/generate', [StoreController::class, 'generateWebhook'])
+        ->name('stores.shopify.generate');
+});
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -57,6 +72,10 @@ Route::middleware(['auth', 'role:Merchant'])->group(function () {
     Route::get('/orders/{order}/edit', [App\Http\Controllers\OrderController::class, 'editWeb'])->name('orders.edit');
     Route::put('/orders/{order}', [App\Http\Controllers\OrderController::class, 'updateWeb'])->name('orders.update');
     Route::delete('/orders/{order}', [App\Http\Controllers\OrderController::class, 'destroyWeb'])->name('orders.destroy');
+
+    // Order status workflow API
+    Route::get('/orders/status-workflow', [App\Http\Controllers\OrderController::class, 'statusWorkflow']);
+    Route::post('/orders/{id}/change-status', [App\Http\Controllers\OrderController::class, 'changeStatus']);
 });
 
 // Products management page
@@ -73,6 +92,21 @@ Route::middleware(['auth', 'role:Merchant'])->group(function () {
     Route::delete('/products/{product}', [ProductController::class, 'destroyWeb'])->name('products.destroy');
     Route::get('/products/{product}', [ProductController::class, 'showWeb'])->name('products.show');
 });
+Route::post('/webhook/shopify/order/{token}/creation', function ($token) {
+
+    $store = \App\Models\Store::where('webhook_token', $token)->first();
+
+    if (!$store) {
+        abort(404);
+    }
+
+    $data = request()->all();
+
+    // هنا تقدري تخزني order ف database
+
+    return response()->json(['success' => true]);
+});
+
 
 // Product API routes
 Route::middleware(['auth', 'role:Merchant'])->group(function () {
@@ -111,5 +145,6 @@ Route::middleware(['auth', 'role:Merchant'])->group(function () {
         ->name('api.products.stats');
     Route::post('/api/products/{product}/record-view', [ProductController::class, 'recordView'])
         ->name('api.products.recordView');
+
 });
 

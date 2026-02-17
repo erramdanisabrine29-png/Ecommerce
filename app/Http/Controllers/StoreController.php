@@ -5,12 +5,36 @@ namespace App\Http\Controllers;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
 
 class StoreController extends Controller
 {
     /**
      * Display a listing of the authenticated user's stores.
      */
+    public function applications(Store $store)
+{
+    return view('stores.applications', compact('store'));
+}
+
+public function shopifyConfig(Store $store)
+{
+    return view('stores.shopify', compact('store'));
+}
+
+public function generateWebhook(Store $store)
+{
+    if (!$store->webhook_secret) {
+
+        $store->webhook_secret = Str::random(64);
+        $store->webhook_token = Str::random(32);
+        $store->save();
+    }
+
+    return redirect()->route('stores.shopify.config', $store->id);
+}
+
     public function index()
     {
         $stores = Store::where('user_id', Auth::id())

@@ -1,9 +1,25 @@
 <x-layouts.app>
 
 <div class="container mx-auto px-4 py-8">
+    
     <div class="max-w-2xl mx-auto">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-900">{{ $store->name }}</h1>
+             <a href="{{ route('stores.applications', $store->id) }}"
+   class="btn btn-lg px-4 py-2 fw-semibold shadow-sm"
+   style="
+       background: linear-gradient(135deg, #ff512f, #dd2476);
+       border: none;
+       border-radius: 12px;
+       color: white;
+       transition: all 0.3s ease;
+   "
+   onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)'"
+   onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.1)'"
+>
+    <i class="bi bi-grid-fill me-2"></i>
+    Applications
+</a>
             <a href="{{ route('stores.index') }}" class="text-gray-600 hover:text-gray-900">← Retour</a>
         </div>
 
@@ -14,6 +30,8 @@
         @endif
 
         <div class="bg-white rounded-lg shadow-md p-8 space-y-6">
+           
+
             <!-- Basic Info -->
             <div>
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations du magasin</h2>
@@ -85,6 +103,8 @@
                 <a href="{{ route('stores.edit', $store) }}" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded text-center">
                     Éditer
                 </a>
+                
+
                 <form action="{{ route('stores.destroy', $store) }}" method="POST" class="flex-1" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce magasin?');">
                     @csrf
                     @method('DELETE')
