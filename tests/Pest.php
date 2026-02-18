@@ -15,6 +15,11 @@ pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
 
+// Ensure roles & permissions exist for tests that call assignRole()
+beforeEach(function () {
+    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Expectations

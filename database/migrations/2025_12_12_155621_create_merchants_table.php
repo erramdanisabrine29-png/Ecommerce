@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id('id_merchant');
 
             // Foreign key user
-            $table->foreignId('user_id')->constrained()->cascadOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
             $table->string('company_name');
             $table->string('siret')->nullable();
@@ -24,7 +24,8 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('postal_code')->nullable();
 
-            $table->string('currency');
+            // default currency to keep tests and quick inserts simple
+            $table->string('currency')->default('USD');
             $table->decimal('balance', 10, 2)->default(0);
 
             $table->date('registration_date')->nullable();

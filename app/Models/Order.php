@@ -43,6 +43,16 @@ class Order extends Model
         return $this->hasMany(OrderStatusHistory::class, 'id_order');
     }
 
+    public function site()
+    {
+        return $this->belongsTo(Site::class, 'id_site');
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(\App\Models\Customer::class, 'id_customer');
+    }
+
     public function lines() {
         return $this->hasMany(OrderLine::class,'id_order');
     }

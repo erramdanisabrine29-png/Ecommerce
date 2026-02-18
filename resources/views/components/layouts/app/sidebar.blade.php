@@ -24,11 +24,29 @@
                     @endcan
 
                 </flux:navlist.group>
+
+                @if(auth()->check() && auth()->user()->can('orders.read'))
+                    @php $__ordersCountSide = \App\Models\Order::countForMerchant(auth()->id() ?? null); @endphp
+                    <flux:navlist.item icon="shopping-cart" :href="route('orders.index')" wire:navigate title="{{ __('My orders') }} — {{ $__ordersCountSide }} {{ __('pending') }}">
+                        <div class="flex items-center justify-between w-full">
+                            <span>{{ __('My orders') }}</span>
+                            @if($__ordersCountSide > 0)
+                                <span class="inline-flex items-center justify-center rounded-full bg-red-600 text-white text-xs font-semibold w-5 h-5" aria-label="{{ $__ordersCountSide }} {{ __('pending orders') }}">{{ $__ordersCountSide }}</span>
+                            @endif
+                        </div>
+                    </flux:navlist.item>
+                @endif
+
+                <flux:navlist.item icon="building-storefront" :href="route('stores.index')" wire:navigate>
+                    {{ __('My stores') }}
+                </flux:navlist.item>
+
+                <flux:navlist.item icon="users" :href="route('users.index')" wire:navigate>
+                    {{ __('My users') }}
+                </flux:navlist.item>
             </flux:navlist>
 
-            <flux:spacer />
-
-            <!-- Desktop User Menu (bottom of sidebar) -->
+            <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
@@ -104,13 +122,13 @@
                                 </div>
                             </div>
                         </div>
-                    </flux:menu.radio.group>
+                    </flux:menu.radio-group>
 
                     <flux:menu.separator />
 
-                    <flux:menu.radio.group>
+                    <flux:menu.radio-group>
                         <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
-                    </flux:menu.radio.group>
+                    </flux:menu.radio-group>
 
                     <flux:menu.separator />
 

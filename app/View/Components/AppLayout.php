@@ -12,6 +12,8 @@ class AppLayout extends Component
      */
     public function render(): View
     {
-        return view('layouts.app');
+        // Use the component-based layout so <x-app-layout> renders the slot
+        // (the Blade view at resources/views/components/layouts/app.blade.php).
+        return view('components.layouts.app');
     }
 }

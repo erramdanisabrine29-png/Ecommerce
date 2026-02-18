@@ -14,7 +14,13 @@ class Store extends Model
         'ssl_certificate_status',
         'tax_rate',
         'minimum_stock',
-        'user_id'
+        'user_id',
+        
+   
+        'webhook_secret',
+        'webhook_token',
+
+
     ];
 
     protected $casts = [

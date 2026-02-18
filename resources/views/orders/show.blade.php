@@ -3,7 +3,9 @@
         <div class="flex justify-between items-start mb-6">
             <div>
                 <flux:heading size="xl">{{ __('Order') }} {{ $order->reference }}</flux:heading>
-                <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ __('Status') }}: <flux:badge color="zinc" size="sm">{{ ucfirst($order->order_status) }}</flux:badge></p>
+                <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                    {{ __('Status') }}: <flux:badge color="zinc" size="sm">{{ ucfirst($order->order_status) }}</flux:badge>
+                </p>
             </div>
             <div class="text-end text-sm">
                 <p class="font-semibold text-zinc-800 dark:text-zinc-200">€{{ number_format($order->total_amount, 2) }}</p>
@@ -11,6 +13,7 @@
             </div>
         </div>
 
+        <!-- Order lines -->
         <flux:card class="mb-6">
             <flux:heading size="lg" class="mb-4">{{ __('Order lines') }}</flux:heading>
             <div class="space-y-4">
@@ -29,21 +32,25 @@
             </div>
         </flux:card>
 
+        <!-- Status history -->
         <flux:card class="mb-6">
             <flux:heading size="lg" class="mb-4">{{ __('Status history') }}</flux:heading>
             <ul class="space-y-2 text-sm">
                 @foreach($order->statusHistory as $h)
                     <li class="border border-zinc-200 dark:border-white/10 rounded-lg p-3">
                         <p class="font-medium text-zinc-800 dark:text-zinc-200">{{ ucfirst($h->new_status) }} — {{ $h->created_at->diffForHumans() }}</p>
-                        @if($h->note)<p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{{ $h->note }}</p>@endif
+                        @if($h->note)
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{{ $h->note }}</p>
+                        @endif
                     </li>
                 @endforeach
             </ul>
         </flux:card>
 
+        <!-- Action buttons -->
         <div class="flex gap-3">
             @can('orders.update')
-            <flux:button :href="route('orders.edit', $order)" variant="outline" wire:navigate>{{ __('Edit') }}</flux:button>
+                <flux:button :href="route('orders.edit', $order)" variant="outline" wire:navigate>{{ __('Edit') }}</flux:button>
             @endcan
             <flux:button :href="route('orders.index')" variant="ghost" wire:navigate>{{ __('Back') }}</flux:button>
         </div>
