@@ -1,7 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
-
+<x-layouts.app>
 <style>
 .big-container {
     padding: 80px 20px;
@@ -172,5 +169,4 @@
     </div>
 
 </div>
-
-@endsection
+</x-layouts.app>
