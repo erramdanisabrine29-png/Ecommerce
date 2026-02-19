@@ -36,14 +36,6 @@
                         </div>
                     </flux:navlist.item>
                 @endif
-
-                <flux:navlist.item icon="building-storefront" :href="route('stores.index')" wire:navigate>
-                    {{ __('My stores') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="users" :href="route('users.index')" wire:navigate>
-                    {{ __('My users') }}
-                </flux:navlist.item>
             </flux:navlist>
 
             <!-- Desktop User Menu -->
