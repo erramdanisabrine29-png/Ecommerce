@@ -39,9 +39,16 @@
             </flux:navlist>
             <!-- Bouton Schéma des statuts -->
             <flux:navlist variant="outline">
-                    <flux:navlist.group :heading="__('Status schema')" class="grid">
-                    <flux:navlist.item icon="shield-check" :href="route('status-schema.index')" :current="request()->routeIs('status-schema.*')" wire:navigate>{{ __('Status schema') }}</flux:navlist.item>
-            </flux:navlist.group>
+    <flux:navlist.group :heading="__('Status schema')" class="grid">
+        <flux:navlist.item 
+            icon="shield-check" 
+            :href="route('status-schema.index')" 
+            :current="request()->routeIs('status-schema.*')" 
+            wire:navigate>
+            {{ __('Status schema') }}
+        </flux:navlist.item>
+    </flux:navlist.group>
+</flux:navlist>
 
             <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
