@@ -94,6 +94,9 @@ Route::post('/webhook/shopify/order/{token}/creation', function ($token) {
 
     return response()->json(['success' => true]);
 });
+Route::get('/status-schema', function () {
+    return view('status-schema.index');
+})->name('status-schema.index');
 
 // Require auth routes
 require __DIR__.'/auth.php';
