@@ -17,7 +17,7 @@
         @if(auth()->user()->hasRole('Merchant') || auth()->user()->hasRole('Administrator'))
 
         <!-- Quick Actions Card -->
-        <div class="p-10 rounded-3xl transition-all duration-300"
+        <div class="p-10 rounded-3xl transition-all duration-300 mb-10"
              style="background-color:white; box-shadow:0 15px 40px rgba(0,0,0,0.05);">
 
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -60,6 +60,35 @@
                 </div>
 
             </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <!-- Total Orders -->
+            <div class="p-8 rounded-3xl shadow-lg"
+                 style="background-color:#FFFDF7; border:1px solid #D8CFC4;">
+                <p class="text-sm uppercase tracking-widest text-gray-700 mb-2">Total Orders</p>
+                <h3 class="text-3xl font-bold text-gray-900">1,245</h3>
+                <p class="text-sm text-gray-600 mt-1">All-time orders placed</p>
+            </div>
+
+            <!-- Orders Delivered -->
+            <div class="p-8 rounded-3xl shadow-lg"
+                 style="background-color:#FFFDF7; border:1px solid #D8CFC4;">
+                <p class="text-sm uppercase tracking-widest text-gray-700 mb-2">Orders Delivered</p>
+                <h3 class="text-3xl font-bold text-gray-900">1,020</h3>
+                <p class="text-sm text-gray-600 mt-1">Successful deliveries</p>
+            </div>
+
+            <!-- Orders Cancelled -->
+            <div class="p-8 rounded-3xl shadow-lg"
+                 style="background-color:#FFFDF7; border:1px solid #D8CFC4;">
+                <p class="text-sm uppercase tracking-widest text-gray-700 mb-2">Orders Cancelled</p>
+                <h3 class="text-3xl font-bold text-gray-900">85</h3>
+                <p class="text-sm text-gray-600 mt-1">Cancelled or refused orders</p>
+            </div>
+
         </div>
 
         @endif
