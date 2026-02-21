@@ -1,5 +1,5 @@
 <x-app-layout>
-<div class="min-h-screen py-12 px-6 lg:px-16" style="background-color:#F5F5F5; font-family: 'Inter', sans-serif;">
+<div class="min-h-screen py-12 px-6 lg:px-16" style="background-color:#F8F5F0; font-family: 'Inter', sans-serif;">
 
     <!-- Header -->
     <div class="flex justify-between items-center mb-12">
