@@ -42,6 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/stores/{store}/applications', [StoreController::class, 'applications'])->name('stores.applications');
     Route::get('/stores/{store}/applications/shopify', [StoreController::class, 'shopifyConfig'])->name('stores.shopify.config');
     Route::post('/stores/{store}/applications/shopify/generate', [StoreController::class, 'generateWebhook'])->name('stores.shopify.generate');
+    Route::put('/stores/{store}/applications/shopify/secret', [StoreController::class, 'updateWebhookSecret'])->name('stores.shopify.updateSecret');
+    Route::delete('/stores/{store}/applications/shopify/secret', [StoreController::class, 'deleteWebhookSecret'])->name('stores.shopify.deleteSecret');
 
     // Orders Web CRUD
     Route::get('/orders', [OrderController::class, 'indexWeb'])->name('orders.index');

@@ -247,6 +247,14 @@
     box-shadow: 0 15px 30px rgba(94, 142, 62, 0.3);
 }
 
+.btn-delete {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, #f87171, #ef4444) !important;
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .big-container {
@@ -310,6 +318,32 @@ html {
     transform: none;
     box-shadow: 0 10px 30px rgba(94, 142, 62, 0.2);
 }
+
+.alert {
+    padding: 20px 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 2px solid #10b981;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #ef4444;
+}
+
+.alert-info {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 2px solid #3b82f6;
+}
 </style>
 
 <div class="big-container">
@@ -321,10 +355,28 @@ html {
             <p>Configurez votre boutique avec une intégration sécurisée et professionnelle.</p>
         </div>
 
-        @if(empty($store->webhook_secret))
+        {{-- Display success/error messages --}}
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-error">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        {{-- If webhook_token not generated, show generate button --}}
+        @if(empty($store->webhook_token))
 
             <div class="empty-state">
-                <h2>Aucun Webhook configuré</h2>
+                <h2>Générer l'URL du Webhook</h2>
+                <p style="font-size: 18px; color: #6b7280; margin-bottom: 40px;">
+                    Cliquez sur le bouton ci-dessous pour générer l'URL du webhook.<br>
+                    Le secret devra être saisi manuellement après.
+                </p>
 
                 <form method="POST"
                       action="{{ route('stores.shopify.generate', $store->id) }}"
@@ -333,7 +385,7 @@ html {
 
                     <button type="submit" class="big-generate-btn" id="generateBtn">
                         <span class="btn-content">
-                            <span class="btn-text">Générer Webhook Maintenant</span>
+                            <span class="btn-text">Générer l'URL du Webhook</span>
                             <span class="btn-loader" style="display: none;">
                                 <svg class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -347,27 +399,53 @@ html {
 
         @else
 
-            {{-- SECRET --}}
+            {{-- WEBHOOK SECRET INPUT --}}
             <div class="input-block">
                 <label>WEBHOOK SECRET</label>
+                <p style="font-size: 16px; color: #6b7280; margin-bottom: 20px;">
+                    Collez le secret généré depuis votre dashboard Shopify (Admin > Settings > Notifications > Webhooks)
+                </p>
 
-                <div class="input-line">
-                    <input type="text"
-                           value="{{ $store->webhook_secret }}"
-                           readonly>
+                <form method="POST" 
+                      action="{{ route('stores.shopify.updateSecret', $store->id) }}"
+                      id="webhookSecretForm">
+                    @csrf
+                    @method('PUT')
 
-                    <button type="button"
-                            class="copy-btn"
-                            data-text="{{ $store->webhook_secret }}"
-                            onclick="copyToClipboard(this, '{{ $store->webhook_secret }}')">
-                        <span class="btn-text">Copier</span>
-                    </button>
-                </div>
+                    <div class="input-line">
+                        <input type="password"
+                               name="webhook_secret"
+                               placeholder="Collez votre webhook secret ici..."
+                               value="{{ $store->webhook_secret ?? '' }}"
+                               autocomplete="off">
+
+                        <button type="submit" class="save-btn">
+                            <span class="btn-text">Enregistrer</span>
+                        </button>
+
+                        @if(!empty($store->webhook_secret))
+                            <button type="button" 
+                                    class="btn-delete"
+                                    onclick="deleteWebhookSecret({{ $store->id }})">
+                                <span class="btn-text">Supprimer</span>
+                            </button>
+                        @endif
+                    </div>
+                </form>
+
+                @error('webhook_secret')
+                    <div style="color: #ef4444; font-size: 16px; margin-top: 15px;">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
 
-            {{-- URL --}}
+            {{-- WEBHOOK URL --}}
             <div class="input-block">
                 <label>WEBHOOK URL</label>
+                <p style="font-size: 16px; color: #6b7280; margin-bottom: 20px;">
+                    Copiez cette URL et collez-la dans votre dashboard Shopify
+                </p>
 
                 <div class="input-line">
                     <input type="text"
@@ -383,11 +461,29 @@ html {
                 </div>
             </div>
 
+            {{-- STATUS --}}
+            <div class="input-block">
+                <label>STATUT</label>
+                <div class="alert {{ !empty($store->webhook_secret) ? 'alert-success' : 'alert-info' }}">
+                    @if(!empty($store->webhook_secret))
+                        ✓ Webhook secret configuré et actif
+                    @else
+                        ⚠ Webhook secret non configuré - Les webhooks seront rejetés
+                    @endif
+                </div>
+            </div>
+
         @endif
 
     </div>
 
 </div>
+
+{{-- Delete Confirmation Form (hidden) --}}
+<form id="deleteSecretForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
 
 <style>
 .big-generate-btn .btn-content {
@@ -450,9 +546,17 @@ function handleFormSubmit(event) {
     }
 }
 
+function deleteWebhookSecret(storeId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer le webhook secret ? Les webhooks seront rejetés jusqu\'à ce qu\'un nouveau secret soit configuré.')) {
+        const form = document.getElementById('deleteSecretForm');
+        form.action = `/stores/${storeId}/applications/shopify/secret`;
+        form.submit();
+    }
+}
+
 // Add smooth entrance animation for elements
 document.addEventListener('DOMContentLoaded', () => {
-    const elements = document.querySelectorAll('.input-block, .empty-state');
+    const elements = document.querySelectorAll('.input-block, .empty-state, .alert');
     elements.forEach((el, index) => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(20px)';

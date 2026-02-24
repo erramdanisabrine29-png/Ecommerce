@@ -74,7 +74,7 @@ class ShopifyController extends Controller
         // Register webhook after successful connection
         $this->registerWebhook($store);
 
-        return redirect()->route('stores.index')git
+        return redirect()->route('stores.index')
             ->with('success', 'Shopify connected successfully.');
     }
 
@@ -109,18 +109,6 @@ class ShopifyController extends Controller
         $hmacHeader = $request->header('X-Shopify-Hmac-Sha256');
         $data = $request->getContent();
 
-        // Verify webhook HMAC
-        $calculatedHmac = base64_encode(
-            hash_hmac('sha256', $data, config('services.shopify.secret'), true)
-        );
-
-        if (!hash_equals($hmacHeader, $calculatedHmac)) {
-            Log::warning('Invalid webhook HMAC.');
-            return response()->json(['error' => 'Invalid signature'], 401);
-        }
-
-        $payload = json_decode($data, true);
-
         // Find store by domain
         $shopDomain = $request->header('X-Shopify-Shop-Domain');
         $store = Store::where('shopify_domain', $shopDomain)->first();
@@ -129,6 +117,32 @@ class ShopifyController extends Controller
             Log::warning('Store not found for webhook.');
             return response()->json(['error' => 'Store not found'], 404);
         }
+
+        // Check if webhook_secret is configured in database
+        if (empty($store->webhook_secret_encrypted)) {
+            Log::warning('Webhook secret not configured for store: ' . $store->id);
+            return response()->json(['error' => 'Webhook secret not configured'], 401);
+        }
+
+        // Decrypt webhook secret from database
+        try {
+            $webhookSecret = decrypt($store->webhook_secret_encrypted);
+        } catch (\Exception $e) {
+            Log::error('Failed to decrypt webhook secret: ' . $e->getMessage());
+            return response()->json(['error' => 'Webhook secret configuration error'], 500);
+        }
+
+        // Verify webhook HMAC using the secret from database
+        $calculatedHmac = base64_encode(
+            hash_hmac('sha256', $data, $webhookSecret, true)
+        );
+
+        if (!hash_equals($hmacHeader, $calculatedHmac)) {
+            Log::warning('Invalid webhook HMAC for store: ' . $store->id);
+            return response()->json(['error' => 'Invalid signature'], 401);
+        }
+
+        $payload = json_decode($data, true);
 
         Order::create([
             'store_id' => $store->id,

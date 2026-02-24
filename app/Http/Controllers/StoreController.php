@@ -25,14 +25,54 @@ public function shopifyConfig(Store $store)
 
 public function generateWebhook(Store $store)
 {
-    if (!$store->webhook_secret) {
-
-        $store->webhook_secret = Str::random(64);
+    // Generate only webhook_token (for URL), NOT webhook_secret
+    // User must manually input webhook_secret from their Shopify dashboard
+    if (!$store->webhook_token) {
         $store->webhook_token = Str::random(32);
         $store->save();
     }
 
     return redirect()->route('stores.shopify.config', $store->id);
+}
+
+/**
+ * Update webhook secret manually (Admin only)
+ * User should paste the secret from their Shopify dashboard
+ */
+public function updateWebhookSecret(Request $request, Store $store)
+{
+    $this->authorize('update', $store);
+
+    $validated = $request->validate([
+        'webhook_secret' => 'required|string|min:20|max:255',
+    ]);
+
+    // Encrypt the webhook secret before storing
+    $encryptedSecret = encrypt($validated['webhook_secret']);
+
+    $store->update([
+        'webhook_secret' => $validated['webhook_secret'], // Plain text (for display, will be masked in UI)
+        'webhook_secret_encrypted' => $encryptedSecret, // Encrypted (for HMAC validation)
+    ]);
+
+    return redirect()->route('stores.shopify.config', $store->id)
+        ->with('success', 'Webhook secret configuré avec succès.');
+}
+
+/**
+ * Delete webhook secret (Admin only)
+ */
+public function deleteWebhookSecret(Store $store)
+{
+    $this->authorize('update', $store);
+
+    $store->update([
+        'webhook_secret' => null,
+        'webhook_secret_encrypted' => null,
+    ]);
+
+    return redirect()->route('stores.shopify.config', $store->id)
+        ->with('success', 'Webhook secret supprimé.');
 }
 
     public function index()

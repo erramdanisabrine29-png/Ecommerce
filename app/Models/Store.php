@@ -15,12 +15,9 @@ class Store extends Model
         'tax_rate',
         'minimum_stock',
         'user_id',
-        
-   
         'webhook_secret',
+        'webhook_secret_encrypted',
         'webhook_token',
-
-
     ];
 
     protected $casts = [
