@@ -906,7 +906,10 @@
                     <a href="#timeline" class="nav-link">Projet</a>
                 </nav>
 
-                <a href="#cta" class="btn btn-primary">Démander une Démo</a>
+                <div class="header-actions" style="display: flex; gap: 12px; align-items: center;">
+                    <a href="{{ route('login') }}" class="btn" style="padding: 12px 24px; font-size: 13px; background: transparent; color: var(--color-black); border: 2px solid var(--color-gray-200);">Connexion</a>
+                    <a href="#cta" class="btn btn-primary">Démander une Démo</a>
+                </div>
             </div>
         </div>
     </header>
