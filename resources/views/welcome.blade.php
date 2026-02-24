@@ -664,6 +664,63 @@
             margin: 0 auto;
         }
 
+        /* FAQ Section */
+        .faq-section {
+            padding: 120px 0;
+            background-color: var(--color-white);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background-color: var(--color-white-off);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid var(--color-gray-100);
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: var(--color-gold);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .faq-question {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .faq-icon {
+            font-size: 14px;
+            color: var(--color-gold);
+            margin-top: 4px;
+        }
+
+        .faq-question h3 {
+            font-size: 18px;
+            color: var(--color-black);
+            font-weight: 600;
+        }
+
+        .faq-answer p {
+            font-size: 15px;
+            color: var(--color-gray-500);
+            line-height: 1.7;
+            padding-left: 26px;
+        }
+
+        .faq-answer strong {
+            color: var(--color-gold);
+        }
+
         /* CTA Section */
         .cta {
             padding: 120px 0;
@@ -864,6 +921,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+
             .cta h2 {
                 font-size: 32px;
             }
@@ -903,7 +964,7 @@
                     <a href="#solution" class="nav-link">Solution</a>
                     <a href="#roles" class="nav-link">Rôles</a>
                     <a href="#performance" class="nav-link">Performance</a>
-                    <a href="#timeline" class="nav-link">Projet</a>
+                    <a href="#faq" class="nav-link">FAQ</a>
                 </nav>
 
                 <div class="header-actions" style="display: flex; gap: 12px; align-items: center;">
@@ -1120,44 +1181,74 @@
         </div>
     </section>
 
-    <!-- Timeline Section -->
-    <section class="timeline-section" id="timeline">
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
         <div class="container">
             <div class="section-header">
-                <span class="section-tag">Notre Processus</span>
-                <h2 class="section-title">Phases du Projet</h2>
-                <p class="section-subtitle">Une méthodologie éprouvée pour garantir votre réussite.</p>
+                <span class="section-tag">Questions Fréquentes</span>
+                <h2 class="section-title">Tout ce que vous devez savoir</h2>
+                <p class="section-subtitle">Des réponses claires à vos questions les plus courantes.</p>
             </div>
 
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-icon">💡</div>
-                    <h3>Conception</h3>
-                    <p>Analyse de vos besoins et création du cahier des charges détaillé.</p>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-icon">🔹</span>
+                        <h3>Qu'est-ce que ORDA ?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>ORDA est une plateforme centralisée de gestion e-commerce multi-sites qui permet d'unifier toutes vos commandes, vos équipes et vos performances depuis une seule interface.</p>
+                    </div>
                 </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-icon">⚙️</div>
-                    <h3>Développement</h3>
-                    <p>Implémentation technique avec intégration de vos systèmes existants.</p>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-icon">🔹</span>
+                        <h3>À qui s'adresse ORDA ?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>ORDA est conçue pour les entreprises, commerçants et gestionnaires qui possèdent plusieurs boutiques e-commerce et souhaitent centraliser leur gestion.</p>
+                    </div>
                 </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-icon">✅</div>
-                    <h3>Tests & Validation</h3>
-                    <p>Phase de QA rigoureuse pour garantir la qualité et la stabilité.</p>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-icon">🔹</span>
+                        <h3>Est-ce que la plateforme est sécurisée ?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Oui. ORDA intègre des protocoles de sécurité avancés, un chiffrement SSL et des transactions sécurisées pour garantir la protection des données.</p>
+                    </div>
                 </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-icon">🚀</div>
-                    <h3>Déploiement</h3>
-                    <p>Mise en production et accompagnement de vos équipes.</p>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-icon">🔹</span>
+                        <h3>Puis-je gérer plusieurs rôles sur la plateforme ?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Oui. ORDA permet une gestion intelligente des rôles : Administrateur, Commerçant, Manager et Employé, chacun avec des permissions spécifiques.</p>
+                    </div>
                 </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-icon">🔧</div>
-                    <h3>Maintenance</h3>
-                    <p>Support continu et évolutions selon vos retours.</p>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-icon">🔹</span>
+                        <h3>La plateforme est-elle adaptée aux entreprises en croissance ?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolument. ORDA est conçue avec une architecture scalable qui s'adapte à l'augmentation du nombre d'utilisateurs et de boutiques.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span class="faq-icon">🔹</span>
+                        <h3>Comment puis-je obtenir une démonstration ?</h3>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Il suffit de nous contacter au : <strong>0621651204</strong> ou de cliquer sur "Planifier une Démonstration".</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1245,7 +1336,7 @@
             });
         }, observerOptions);
 
-        document.querySelectorAll('.problem-card, .solution-card, .role-card, .performance-card, .timeline-item').forEach(el => {
+        document.querySelectorAll('.problem-card, .solution-card, .role-card, .performance-card, .faq-item').forEach(el => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
             el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
