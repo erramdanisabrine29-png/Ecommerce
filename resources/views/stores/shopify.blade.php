@@ -255,70 +255,6 @@
     background: linear-gradient(135deg, #f87171, #ef4444) !important;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .big-container {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    }
-    
-    .premium-card {
-        background: #1e293b;
-        box-shadow: 0 30px 70px rgba(0,0,0,0.3);
-    }
-    
-    .top-header h1 {
-        background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .top-header p {
-        color: #94a3b8;
-    }
-    
-    .input-block label {
-        color: #f1f5f9;
-    }
-    
-    .input-line input {
-        background: #0f172a;
-        border-color: #334155;
-        color: #f1f5f9;
-    }
-    
-    .input-line input:hover {
-        background: #1e293b;
-        border-color: #475569;
-    }
-    
-    .input-line input:focus {
-        background: #1e293b;
-        border-color: #5e8e3e;
-    }
-    
-    .empty-state h2 {
-        color: #f1f5f9;
-    }
-}
-
-/* Smooth scroll */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Loading state */
-.big-generate-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.big-generate-btn:disabled:hover {
-    transform: none;
-    box-shadow: 0 10px 30px rgba(94, 142, 62, 0.2);
-}
-
 .alert {
     padding: 20px 30px;
     border-radius: 15px;
@@ -367,6 +303,38 @@ html {
                 {{ session('error') }}
             </div>
         @endif
+
+        {{-- SHOPIFY CONNECTION STATUS --}}
+        <div class="input-block">
+            <label>CONNEXION SHOPIFY</label>
+            
+            @if($store->shopify_connected_at)
+                <div class="alert alert-success">
+                    ✓ Boutique Shopify connectée le {{ $store->shopify_connected_at->format('d/m/Y à H:i') }}
+                </div>
+                <form method="POST" action="{{ route('stores.shopify.disconnect', $store->id) }}" 
+                      onsubmit="return confirm('Voulez-vous vraiment déconnecter la boutique Shopify ?');" 
+                      style="margin-top: 15px;">
+                    @csrf
+                    <button type="submit" class="btn-delete" style="height: 60px; padding: 0 30px; font-size: 18px; border-radius: 15px;">
+                        <span class="btn-text">Déconnecter Shopify</span>
+                    </button>
+                </form>
+            @else
+                <div class="alert alert-info">
+                    ⚠ Boutique Shopify non connectée
+                </div>
+                <p style="font-size: 16px; color: #6b7280; margin-bottom: 20px;">
+                    Cliquez sur le bouton ci-dessous pour autoriser l'accès à votre boutique Shopify.
+                </p>
+                <form method="POST" action="{{ route('stores.shopify.connect', $store->id) }}">
+                    @csrf
+                    <button type="submit" class="big-generate-btn" style="padding: 20px 60px; font-size: 20px;">
+                        <span class="btn-text">Connecter Shopify</span>
+                    </button>
+                </form>
+            @endif
+        </div>
 
         {{-- If webhook_token not generated, show generate button --}}
         @if(empty($store->webhook_token))
@@ -554,7 +522,6 @@ function deleteWebhookSecret(storeId) {
     }
 }
 
-// Add smooth entrance animation for elements
 document.addEventListener('DOMContentLoaded', () => {
     const elements = document.querySelectorAll('.input-block, .empty-state, .alert');
     elements.forEach((el, index) => {
