@@ -83,19 +83,12 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// Shopify webhook route (public token-based)
-Route::post('/webhook/shopify/order/{token}/creation', function ($token) {
-    $store = \App\Models\Store::where('webhook_token', $token)->first();
+// Shopify webhook route (public - for receiving orders from Shopify)
+Route::post('/webhook/shopify/orders', [ShopifyController::class, 'handleWebhookOrder'])->name('shopify.webhook.order');
 
-    if (!$store) {
-        abort(404);
-    }
+// Legacy webhook route (token-based)
+Route::post('/webhook/shopify/order/{token}/creation', [ShopifyController::class, 'webhook'])->name('shopify.webhook.legacy');
 
-    $data = request()->all();
-    // Store order in database if needed
-
-    return response()->json(['success' => true]);
-});
 Route::get('/status-schema', function () {
     return view('status-schema.index');
 })->name('status-schema.index');

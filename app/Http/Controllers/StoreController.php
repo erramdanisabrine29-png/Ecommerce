@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 
@@ -38,6 +40,7 @@ public function generateWebhook(Store $store)
 /**
  * Update webhook secret manually (Admin only)
  * User should paste the secret from their Shopify dashboard
+ * This will also verify the Shopify connection and register the webhook
  */
 public function updateWebhookSecret(Request $request, Store $store)
 {
@@ -47,16 +50,88 @@ public function updateWebhookSecret(Request $request, Store $store)
         'webhook_secret' => 'required|string|min:20|max:255',
     ]);
 
-    // Encrypt the webhook secret before storing
-    $encryptedSecret = encrypt($validated['webhook_secret']);
+    try {
+        // Step 1: Verify Shopify connection using the stored access token
+        if (!$store->shopify_token || !$store->shopify_domain) {
+            return redirect()->route('stores.shopify.config', $store->id)
+                ->with('error', 'Boutique Shopify non connectée. Veuillez d\'abord connecter votre boutique.');
+        }
 
-    $store->update([
-        'webhook_secret' => $validated['webhook_secret'], // Plain text (for display, will be masked in UI)
-        'webhook_secret_encrypted' => $encryptedSecret, // Encrypted (for HMAC validation)
-    ]);
+        $accessToken = decrypt($store->shopify_token);
 
-    return redirect()->route('stores.shopify.config', $store->id)
-        ->with('success', 'Webhook secret configuré avec succès.');
+        // Test API connection by fetching shop info
+        $shopResponse = Http::withHeaders([
+            'X-Shopify-Access-Token' => $accessToken
+        ])->get("https://{$store->shopify_domain}/admin/api/2024-01/shop.json");
+
+        if (!$shopResponse->successful()) {
+            Log::error('Shopify connection verification failed for store: ' . $store->id);
+            return redirect()->route('stores.shopify.config', $store->id)
+                ->with('error', 'Connexion à Shopify invalide. Veuillez reconnecter votre boutique.');
+        }
+
+        // Step 2: Register webhook on Shopify
+        $webhookUrl = route('shopify.webhook.order');
+        
+        $webhookResponse = Http::withHeaders([
+            'X-Shopify-Access-Token' => $accessToken,
+            'Content-Type' => 'application/json'
+        ])->post("https://{$store->shopify_domain}/admin/api/2024-01/webhooks.json", [
+            'webhook' => [
+                'topic' => 'orders/create',
+                'address' => $webhookUrl,
+                'format' => 'json'
+            ]
+        ]);
+
+        if (!$webhookResponse->successful()) {
+            $errorBody = $webhookResponse->body();
+            Log::error('Failed to register Shopify webhook for store: ' . $store->id, [
+                'error' => $errorBody
+            ]);
+            
+            // Check if webhook already exists
+            $webhookExistsResponse = Http::withHeaders([
+                'X-Shopify-Access-Token' => $accessToken
+            ])->get("https://{$store->shopify_domain}/admin/api/2024-01/webhooks.json");
+
+            if ($webhookExistsResponse->successful()) {
+                $webhooks = $webhookExistsResponse->json('webhooks');
+                $existingWebhook = collect($webhooks)->firstWhere('topic', 'orders/create');
+                
+                if ($existingWebhook) {
+                    // Webhook already exists, that's fine
+                    Log::info('Webhook already exists for store: ' . $store->id);
+                } else {
+                    return redirect()->route('stores.shopify.config', $store->id)
+                        ->with('error', 'Impossible d\'enregistrer le webhook sur Shopify: ' . $errorBody);
+                }
+            }
+        }
+
+        // Step 3: Encrypt and store the webhook secret
+        $encryptedSecret = encrypt($validated['webhook_secret']);
+
+        $store->update([
+            'webhook_secret' => $validated['webhook_secret'],
+            'webhook_secret_encrypted' => $encryptedSecret,
+            'shopify_connected_at' => now(), // Mark as connected
+        ]);
+
+        Log::info('Webhook secret configured successfully for store: ' . $store->id);
+
+        return redirect()->route('stores.shopify.config', $store->id)
+            ->with('success', 'Webhook secret configuré avec succès. Boutique Shopify connectée et webhook enregistré.');
+
+    } catch (\Exception $e) {
+        Log::error('Error configuring webhook secret for store: ' . $store->id, [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return redirect()->route('stores.shopify.config', $store->id)
+            ->with('error', 'Erreur lors de la configuration: ' . $e->getMessage());
+    }
 }
 
 /**

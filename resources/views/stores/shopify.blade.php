@@ -444,18 +444,18 @@ html {
             <div class="input-block">
                 <label>WEBHOOK URL</label>
                 <p style="font-size: 16px; color: #6b7280; margin-bottom: 20px;">
-                    Copiez cette URL et collez-la dans votre dashboard Shopify
+                    Copiez cette URL et collez-la dans votre dashboard Shopify (Settings > Notifications > Webhooks)
                 </p>
 
                 <div class="input-line">
                     <input type="text"
-                           value="{{ url('/webhook/shopify/order/'.$store->webhook_token.'/creation') }}"
+                           value="{{ route('shopify.webhook.order') }}"
                            readonly>
 
                     <button type="button"
                             class="copy-btn"
-                            data-text="{{ url('/webhook/shopify/order/'.$store->webhook_token.'/creation') }}"
-                            onclick="copyToClipboard(this, '{{ url('/webhook/shopify/order/'.$store->webhook_token.'/creation') }}')">
+                            data-text="{{ route('shopify.webhook.order') }}"
+                            onclick="copyToClipboard(this, '{{ route('shopify.webhook.order') }}')">
                         <span class="btn-text">Copier</span>
                     </button>
                 </div>
