@@ -41,6 +41,12 @@ Route::middleware('auth')->group(function () {
     // Store applications & Shopify
     Route::get('/stores/{store}/applications', [StoreController::class, 'applications'])->name('stores.applications');
     Route::get('/stores/{store}/applications/shopify', [StoreController::class, 'shopifyConfig'])->name('stores.shopify.config');
+    
+    // Shopify OAuth routes
+    Route::post('/stores/{store}/applications/shopify/connect', [StoreController::class, 'connectShopify'])->name('stores.shopify.connect');
+    Route::post('/stores/{store}/applications/shopify/disconnect', [StoreController::class, 'disconnectShopify'])->name('stores.shopify.disconnect');
+    
+    // Webhook routes
     Route::post('/stores/{store}/applications/shopify/generate', [StoreController::class, 'generateWebhook'])->name('stores.shopify.generate');
     Route::put('/stores/{store}/applications/shopify/secret', [StoreController::class, 'updateWebhookSecret'])->name('stores.shopify.updateSecret');
     Route::delete('/stores/{store}/applications/shopify/secret', [StoreController::class, 'deleteWebhookSecret'])->name('stores.shopify.deleteSecret');
@@ -82,6 +88,9 @@ Route::middleware('auth')->group(function () {
     });
 
 });
+
+// Shopify OAuth callback (public)
+Route::get('/shopify/callback', [ShopifyController::class, 'callback'])->name('shopify.callback');
 
 // Shopify webhook route (public - for receiving orders from Shopify)
 Route::post('/webhook/shopify/orders', [ShopifyController::class, 'handleWebhookOrder'])->name('shopify.webhook.order');
