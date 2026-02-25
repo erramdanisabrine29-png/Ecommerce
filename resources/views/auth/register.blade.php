@@ -10,6 +10,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Anurati&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -97,6 +98,13 @@
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }
+        
+        /* Anurati font for logo */
+        .font-anurati {
+            font-family: 'Anurati', sans-serif;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body class="bg-orda-white min-h-screen flex items-center justify-center">
@@ -112,7 +120,7 @@
         <!-- Logo -->
         <div class="text-center mb-10 fade-in-up">
             <a href="{{ route('welcome') }}" class="inline-flex items-center gap-2">
-                <span class="text-4xl font-extrabold text-orda-black tracking-tight">ORDA<span class="text-orda-gold">.</span></span>
+                <span class="font-anurati text-4xl font-extrabold text-orda-black">ORDA<span class="text-orda-gold">.</span></span>
             </a>
         </div>
 
