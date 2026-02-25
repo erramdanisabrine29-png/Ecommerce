@@ -114,7 +114,7 @@
         <div class="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-orda-black/5 to-transparent"></div>
     </div>
 
-    <div class="w-full max-w-md px-6 py-12 relative z-10">
+    <div class="w-full max-w-lg px-6 py-12 relative z-10">
         
         <!-- Logo -->
         <div class="text-center mb-10 fade-in-up">
