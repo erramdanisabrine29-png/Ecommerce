@@ -25,6 +25,75 @@ public function shopifyConfig(Store $store)
     return view('stores.shopify', compact('store'));
 }
 
+/**
+ * Check if store is connected to Shopify
+ */
+public function isShopifyConnected(Store $store): bool
+{
+    return !empty($store->shopify_token) && !empty($store->shopify_domain);
+}
+
+/**
+ * Initiate Shopify OAuth connection
+ * Redirects merchant to Shopify authorization page
+ */
+public function connectShopify(Store $store)
+{
+    $this->authorize('update', $store);
+
+    // Validate that we have a shop domain
+    $shopDomain = $store->url;
+    
+    if (!$shopDomain) {
+        return redirect()->route('stores.shopify.config', $store->id)
+            ->with('error', 'URL de la boutique requise pour la connexion Shopify.');
+    }
+
+    // Clean the shop domain (remove https:// if present)
+    $shopDomain = preg_replace('#^https?://#', '', $shopDomain);
+    $shopDomain = rtrim($shopDomain, '/');
+
+    // Build OAuth authorization URL
+    $scopes = 'read_orders,read_products,write_webhooks';
+    $redirectUri = route('shopify.callback');
+    $state = $store->id;
+
+    $authorizationUrl = "https://{$shopDomain}/admin/oauth/authorize?" . http_build_query([
+        'client_id' => config('services.shopify.key'),
+        'scope' => $scopes,
+        'redirect_uri' => $redirectUri,
+        'state' => $state,
+    ]);
+
+    Log::info('Initiating Shopify OAuth for store: ' . $store->id, [
+        'shop' => $shopDomain,
+        'redirect_uri' => $redirectUri
+    ]);
+
+    return redirect($authorizationUrl);
+}
+
+/**
+ * Disconnect Shopify (remove tokens)
+ */
+public function disconnectShopify(Store $store)
+{
+    $this->authorize('update', $store);
+
+    $store->update([
+        'shopify_token' => null,
+        'shopify_domain' => null,
+        'shopify_connected_at' => null,
+        'webhook_secret' => null,
+        'webhook_secret_encrypted' => null,
+    ]);
+
+    Log::info('Shopify disconnected for store: ' . $store->id);
+
+    return redirect()->route('stores.shopify.config', $store->id)
+        ->with('success', 'Boutique Shopify déconnectée.');
+}
+
 public function generateWebhook(Store $store)
 {
     // Generate only webhook_token (for URL), NOT webhook_secret

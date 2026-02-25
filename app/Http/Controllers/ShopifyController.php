@@ -74,8 +74,8 @@ class ShopifyController extends Controller
         // Register webhook after successful connection
         $this->registerWebhook($store);
 
-        return redirect()->route('stores.index')
-            ->with('success', 'Shopify connected successfully.');
+        return redirect()->route('stores.shopify.config', $store->id)
+            ->with('success', 'Shopify connecté avec succès ! Vous pouvez maintenant configurer le webhook secret.');
     }
 
     /**
@@ -91,7 +91,7 @@ class ShopifyController extends Controller
             ])->post("https://{$store->shopify_domain}/admin/api/2023-10/webhooks.json", [
                 "webhook" => [
                     "topic" => "orders/create",
-                    "address" => route('shopify.webhook'),
+                    "address" => route('shopify.webhook.order'),
                     "format" => "json"
                 ]
             ]);
