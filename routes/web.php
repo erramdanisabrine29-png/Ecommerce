@@ -30,11 +30,11 @@ Route::middleware('auth')->group(function () {
         return view('admin.index');
     })->middleware(['role:Administrator'])->name('admin.index');
 
-    // Users resource (permission-based)
-    Route::resource('users', UserController::class)->middleware(['permission:users.read']);
+    // Users resource - utilisant les policies Laravel
+    Route::resource('users', UserController::class);
 
-    // Stores resource (permission-based)
-    Route::resource('stores', StoreController::class)->middleware(['permission:stores.read']);
+    // Stores resource - utilisant les policies Laravel
+    Route::resource('stores', StoreController::class);
     Route::post('/stores/{store}/regenerate-api-key', [StoreController::class, 'regenerateApiKey'])->name('stores.regenerateApiKey');
     Route::get('/stores/{store}/json', [StoreController::class, 'getJson'])->name('stores.json');
 
