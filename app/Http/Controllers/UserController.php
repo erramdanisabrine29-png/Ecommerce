@@ -38,15 +38,15 @@ class UserController extends Controller
             'role' => 'required|string|exists:roles,name',
         ]);
 
-        // ✅ Création user avec mapping Fillable
-        $createdUser = User::create([
+        // ✅ Création user avec Fillable
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']), // bcrypt sécurisé
+            'password' => Hash::make($validated['password']), // hash password
         ]);
 
         // ✅ Assigner role
-        $createdUser->assignRole($validated['role']);
+        $user->assignRole($validated['role']);
 
         return redirect()->route('users.index')
                          ->with('success', 'Utilisateur créé avec succès !');
@@ -69,24 +69,23 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6|confirmed', // si tu veux pouvoir changer le mot de passe
+            'password' => 'nullable|string|min:6|confirmed', // optionnel
             'role' => 'required|string|exists:roles,name',
         ]);
 
-        // ✅ Mise à jour user
+        // ✅ Update user
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
         ];
 
-        // 🔑 Si mot de passe fourni, hashé
         if (!empty($validated['password'])) {
             $data['password'] = Hash::make($validated['password']);
         }
 
         $user->update($data);
 
-        // ✅ Synchroniser roles
+        // ✅ Sync roles
         $user->syncRoles([$validated['role']]);
 
         return redirect()->route('users.index')
@@ -98,6 +97,8 @@ class UserController extends Controller
     {
         $this->authorize('delete', $user);
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'Utilisateur supprimé avec succès !');
+
+        return redirect()->route('users.index')
+                         ->with('success', 'Utilisateur supprimé avec succès !');
     }
 }

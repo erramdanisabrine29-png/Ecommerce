@@ -1,37 +1,61 @@
 <x-app-layout>
-    <div class="p-6 lg:p-8">
-        <flux:heading size="xl" class="mb-6">{{ __('Create user') }}</flux:heading>
+    <div class="p-6 lg:p-8 max-w-2xl mx-auto">
+        <h2 class="text-xl font-bold mb-6">{{ __('Create user') }}</h2>
 
-        <flux:card class="max-w-2xl">
-            <form action="{{ route('users.store') }}" method="POST" class="space-y-6">
-                @csrf
+        @if($errors->any())
+            <div class="bg-red-50 border border-red-500 text-red-700 p-4 mb-4 rounded">
+                <ul class="list-disc list-inside text-sm space-y-1">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-                @if($errors->any())
-                    <flux:card class="!border-red-500 !bg-red-50 dark:!bg-red-950/30">
-                        <ul class="list-disc list-inside text-red-700 dark:text-red-400 text-sm space-y-1">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </flux:card>
-                @endif
+        <form action="{{ route('users.store') }}" method="POST" class="space-y-6">
+            @csrf
 
-                <flux:input name="name" type="text" :label="__('Name')" :value="old('name')" required />
-                <flux:input name="email" type="email" :label="__('Email')" :value="old('email')" required />
-                <flux:input name="password" type="password" :label="__('Password')" required />
-                <flux:input name="password_confirmation" type="password" :label="__('Confirm password')" required />
+            <div>
+                <label for="name" class="block font-medium mb-1">{{ __('Name') }}</label>
+                <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                       class="w-full border rounded px-3 py-2">
+            </div>
 
-                <flux:select name="role" :label="__('Role')" required>
-                        @foreach($roles as $role)
-                            <option value="{{ $role->name }}">{{ $role->name }}</option>
-                        @endforeach
-                </flux:select>
+            <div>
+                <label for="email" class="block font-medium mb-1">{{ __('Email') }}</label>
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                       class="w-full border rounded px-3 py-2">
+            </div>
 
-                <div class="flex gap-3">
-                    <flux:button type="submit" variant="primary">{{ __('Create') }}</flux:button>
-                    <flux:button :href="route('users.index')" variant="ghost" wire:navigate>{{ __('Cancel') }}</flux:button>
-                </div>
-            </form>
-        </flux:card>
+            <div>
+                <label for="password" class="block font-medium mb-1">{{ __('Password') }}</label>
+                <input type="password" name="password" id="password" required
+                       class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div>
+                <label for="password_confirmation" class="block font-medium mb-1">{{ __('Confirm Password') }}</label>
+                <input type="password" name="password_confirmation" id="password_confirmation" required
+                       class="w-full border rounded px-3 py-2">
+            </div>
+
+            <div>
+                <label for="role" class="block font-medium mb-1">{{ __('Role') }}</label>
+                <select name="role" id="role" required class="w-full border rounded px-3 py-2">
+                    @foreach($roles as $role)
+                        <option value="{{ $role->name }}">{{ $role->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex gap-3 mt-4">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+                    {{ __('Create') }}
+                </button>
+                <a href="{{ route('users.index') }}" class="bg-gray-200 px-4 py-2 rounded">
+                    {{ __('Cancel') }}
+                </a>
+            </div>
+        </form>
     </div>
 </x-app-layout>
