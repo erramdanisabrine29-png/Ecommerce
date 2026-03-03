@@ -29,6 +29,8 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', User::class);
+
+        // ✅ Validation
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -36,12 +38,14 @@ class UserController extends Controller
             'role' => 'required|string|exists:roles,name',
         ]);
 
+        // ✅ Création user avec mapping Fillable
         $createdUser = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($validated['password']), // bcrypt sécurisé
         ]);
 
+        // ✅ Assigner role
         $createdUser->assignRole($validated['role']);
 
         return redirect()->route('users.index')
@@ -60,17 +64,29 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $this->authorize('update', $user);
+
+        // ✅ Validation
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:6|confirmed', // si tu veux pouvoir changer le mot de passe
             'role' => 'required|string|exists:roles,name',
         ]);
 
-        $user->update([
+        // ✅ Mise à jour user
+        $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
-        ]);
+        ];
 
+        // 🔑 Si mot de passe fourni, hashé
+        if (!empty($validated['password'])) {
+            $data['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($data);
+
+        // ✅ Synchroniser roles
         $user->syncRoles([$validated['role']]);
 
         return redirect()->route('users.index')
