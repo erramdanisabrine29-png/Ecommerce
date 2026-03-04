@@ -50,6 +50,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/stores/{store}/applications/shopify/generate', [StoreController::class, 'generateWebhook'])->name('stores.shopify.generate');
     Route::put('/stores/{store}/applications/shopify/secret', [StoreController::class, 'updateWebhookSecret'])->name('stores.shopify.updateSecret');
     Route::delete('/stores/{store}/applications/shopify/secret', [StoreController::class, 'deleteWebhookSecret'])->name('stores.shopify.deleteSecret');
+    
+    // AJAX: Generate webhook secret automatically
+    Route::post('/stores/{store}/applications/shopify/generate-secret', [StoreController::class, 'generateWebhookSecretAjax'])->name('stores.shopify.generateSecretAjax');
 
     // Orders Web CRUD
     Route::get('/orders', [OrderController::class, 'indexWeb'])->name('orders.index');

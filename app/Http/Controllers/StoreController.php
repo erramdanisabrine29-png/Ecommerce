@@ -107,6 +107,49 @@ public function generateWebhook(Store $store)
 }
 
 /**
+ * Generate webhook secret automatically via AJAX
+ * This generates both the webhook_token and webhook_secret
+ */
+public function generateWebhookSecretAjax(Store $store)
+{
+    $this->authorize('update', $store);
+
+    try {
+        // Generate webhook_token if not exists
+        if (!$store->webhook_token) {
+            $store->webhook_token = Str::random(32);
+        }
+
+        // Generate webhook_secret automatically
+        $webhookSecret = Str::random(32);
+        $encryptedSecret = encrypt($webhookSecret);
+
+        $store->update([
+            'webhook_token' => $store->webhook_token,
+            'webhook_secret' => $webhookSecret,
+            'webhook_secret_encrypted' => $encryptedSecret,
+        ]);
+
+        Log::info('Webhook secret generated automatically for store: ' . $store->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Webhook secret generated successfully',
+            'webhook_secret' => $webhookSecret,
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error generating webhook secret for store: ' . $store->id, [
+            'message' => $e->getMessage(),
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Error generating webhook secret: ' . $e->getMessage(),
+        ], 500);
+    }
+}
+
+/**
  * Update webhook secret manually (Admin only)
  * User should paste the secret from their Shopify dashboard
  * This will also verify the Shopify connection and register the webhook

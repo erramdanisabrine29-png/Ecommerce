@@ -66,6 +66,16 @@
                     <!-- Actions -->
                     <div class="flex gap-3">
                         @can('stores.update')
+                            <button type="button"
+                                    onclick="generateWebhookSecret({{ $store->id }})"
+                                    id="applicationBtn"
+                                    class="px-4 py-2 text-xs font-semibold rounded-lg border transition-all duration-300"
+                                    style="border-color:#3B82F6; color:#3B82F6;"
+                                    onmouseover="this.style.backgroundColor='#3B82F6'; this.style.color='#FFFFFF';"
+                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3B82F6';">
+                                {{ __('Application') }}
+                            </button>
+                            
                             <a href="{{ route('stores.edit', $store) }}"
                                class="px-4 py-2 text-xs font-semibold rounded-lg border transition-all duration-300"
                                style="border-color:#D4AF37; color:#D4AF37;"
@@ -214,6 +224,48 @@
                 alert('{{ __("API key copied to clipboard!") }}');
             }, function(err) {
                 console.error('Could not copy text: ', err);
+            });
+        }
+
+        function generateWebhookSecret(storeId) {
+            const button = document.getElementById('applicationBtn');
+            const originalText = button.textContent;
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = '{{ __("Generating...") }}';
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            fetch(`/stores/${storeId}/applications/shopify/generate-secret`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message with the generated webhook secret
+                    const webhookSecret = data.webhook_secret;
+                    alert('Webhook secret generated successfully!\n\nSecret: ' + webhookSecret + '\n\nPlease save this secret securely.');
+                    button.textContent = '{{ __("Generated") }}';
+                    button.style.borderColor = '#10B981';
+                    button.style.color = '#10B981';
+                } else {
+                    alert('Error: ' + data.message);
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while generating the webhook secret.');
+                button.textContent = originalText;
+                button.disabled = false;
             });
         }
     </script>
