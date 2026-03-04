@@ -23,8 +23,12 @@ class DatabaseSeeder extends Seeder
             adminSeeder::class,
             // Create merchant users (new)
             MerchantSeeder::class,
+            // Create sites for each merchant
+            SiteSeeder::class,
             // Create products for each merchant
             ProductSeeder::class,
+            // Create customers for testing
+            CustomerSeeder::class,
         ]);
 
         

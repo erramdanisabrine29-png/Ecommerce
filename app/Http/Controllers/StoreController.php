@@ -248,7 +248,7 @@ public function deleteWebhookSecret(Store $store)
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'url' => 'required|url|unique:stores,url',
-            'ssl_certificate_status' => 'required|in:active,inactive,expired,pending',
+            'ssl_certificate_status' => 'nullable|in:active,inactive,expired,pending',
             'tax_rate' => 'required|numeric|min:0|max:100',
             'minimum_stock' => 'required|integer|min:1',
             'api_key' => 'nullable|string|unique:stores,api_key',
@@ -257,6 +257,11 @@ public function deleteWebhookSecret(Store $store)
         // Generate API key if not provided
         if (empty($validated['api_key'])) {
             $validated['api_key'] = Store::generateUniqueApiKey();
+        }
+
+        // Set default ssl_certificate_status if not provided
+        if (empty($validated['ssl_certificate_status'])) {
+            $validated['ssl_certificate_status'] = 'pending';
         }
 
         $validated['user_id'] = Auth::id();
@@ -294,10 +299,15 @@ public function deleteWebhookSecret(Store $store)
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'url' => 'required|url|unique:stores,url,' . $store->id,
-            'ssl_certificate_status' => 'required|in:active,inactive,expired,pending',
+            'ssl_certificate_status' => 'nullable|in:active,inactive,expired,pending',
             'tax_rate' => 'required|numeric|min:0|max:100',
             'minimum_stock' => 'required|integer|min:1',
         ]);
+
+        // Set default ssl_certificate_status if not provided
+        if (empty($validated['ssl_certificate_status'])) {
+            $validated['ssl_certificate_status'] = 'pending';
+        }
 
         $store->update($validated);
 
