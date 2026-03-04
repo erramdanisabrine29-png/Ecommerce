@@ -1,118 +1,220 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-8">
-
+    <div class="min-h-screen py-12 px-6 lg:px-16" style="background-color:#F8F8F8;">
+        
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">{{ $store->name }}</h1>
-
-            <div class="flex gap-2">
-                <a href="{{ route('stores.applications', $store->id) }}"
-                   class="btn btn-lg px-4 py-2 fw-semibold shadow-sm"
-                   style="
-                       background: linear-gradient(135deg, #ff512f, #dd2476);
-                       border: none;
-                       border-radius: 12px;
-                       color: white;
-                       transition: all 0.3s ease;
-                   "
-                   onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)'"
-                   onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.1)'"
-                >
-                    <i class="bi bi-grid-fill me-2"></i>
-                    Applications
-                </a>
-
-                <a href="{{ route('stores.index') }}" class="text-gray-600 hover:text-gray-900">← Retour</a>
-            </div>
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold" style="color:#0A0A0A;">
+                {{ __('Store Details') }}
+            </h1>
+            <a href="{{ route('stores.index') }}" 
+               class="px-5 py-2.5 rounded-lg text-sm font-semibold border transition-all duration-300"
+               style="border-color:#E5E5E5; color:#666666;"
+               onmouseover="this.style.backgroundColor='#F8F8F8'; this.style.border-color='#666666';"
+               onmouseout="this.style.backgroundColor='transparent'; this.style.border-color='#E5E5E5';">
+                ← {{ __('Back to Stores') }}
+            </a>
         </div>
 
-        <!-- Success message -->
+        <!-- Success Message -->
         @if(session('success'))
-            <flux:card class="mb-6 !border-green-500 !bg-green-50 dark:!bg-green-950/30">
-                <p class="text-green-700 dark:text-green-400 text-sm">{{ session('success') }}</p>
-            </flux:card>
+            <div class="mb-8 p-6 rounded-xl"
+                 style="background-color:#FFFFFF; border:1px solid #D4AF37; color:#0A0A0A;">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5" style="color:#D4AF37;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    {{ session('success') }}
+                </div>
+            </div>
         @endif
 
-        <!-- Store details -->
-        <div class="bg-white rounded-lg shadow-md p-8 space-y-6">
-
-            <div>
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Informations du magasin</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-gray-600 text-sm">Nom</p>
-                        <p class="text-lg font-medium text-gray-900">{{ $store->name }}</p>
+        <!-- Store Info Card -->
+        <div class="rounded-2xl overflow-hidden mb-6"
+             style="background-color:#FFFFFF; border:1px solid #E5E5E5; box-shadow:0 15px 40px rgba(0,0,0,0.05);">
+            
+            <div class="p-8">
+                <div class="flex items-start justify-between">
+                    <!-- Store Basic Info -->
+                    <div class="flex items-center gap-6">
+                        <div class="w-20 h-20 rounded-xl flex items-center justify-center text-2xl font-bold"
+                             style="background-color:#D4AF37; color:#0A0A0A;">
+                            {{ strtoupper(substr($store->name, 0, 2)) }}
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold" style="color:#0A0A0A;">
+                                {{ $store->name }}
+                            </h2>
+                            <p class="text-sm mt-1" style="color:#666666;">
+                                {{ $store->url }}
+                            </p>
+                            <div class="mt-3 flex items-center gap-3">
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full"
+                                      style="background-color: {{ $store->ssl_certificate_status === 'active' ? '#D4EDDA' : '#F8D7DA' }};
+                                             color: {{ $store->ssl_certificate_status === 'active' ? '#155724' : '#721C24' }};">
+                                    {{ ucfirst($store->ssl_certificate_status) }}
+                                </span>
+                                @if($store->shopify_connected_at)
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full"
+                                          style="background-color:#D4EDDA; color:#155724;">
+                                        Shopify Connected
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-gray-600 text-sm">URL</p>
-                        <p class="text-lg font-medium">
-                            <a href="{{ $store->url }}" target="_blank" class="text-blue-600 hover:underline">{{ $store->url }}</a>
+
+                    <!-- Actions -->
+                    <div class="flex gap-3">
+                        @can('stores.update')
+                            <a href="{{ route('stores.edit', $store) }}"
+                               class="px-4 py-2 text-xs font-semibold rounded-lg border transition-all duration-300"
+                               style="border-color:#D4AF37; color:#D4AF37;"
+                               onmouseover="this.style.backgroundColor='#D4AF37'; this.style.color='#0A0A0A';"
+                               onmouseout="this.style.backgroundColor='transparent'; this.style.color='#D4AF37';">
+                                {{ __('Edit') }}
+                            </a>
+                        @endcan
+                        
+                        @can('stores.delete')
+                            <form method="POST" 
+                                  action="{{ route('stores.destroy', $store) }}"
+                                  onsubmit="return confirm('{{ __('Are you sure you want to delete this store?') }}');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="px-4 py-2 text-xs font-semibold rounded-lg border transition-all duration-300"
+                                        style="border-color:#EF4444; color:#EF4444;"
+                                        onmouseover="this.style.backgroundColor='#EF4444'; this.style.color='#FFFFFF';"
+                                        onmouseout="this.style.backgroundColor='transparent'; this.style.color='#EF4444';">
+                                    {{ __('Delete') }}
+                                </button>
+                            </form>
+                        @endcan
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="border-t" style="border-color:#E5E5E5;">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                    <!-- Store URL -->
+                    <div class="p-6 border-r" style="border-color:#E5E5E5;">
+                        <p class="text-xs uppercase tracking-wider mb-1" style="color:#666666;">
+                            {{ __('Store URL') }}
+                        </p>
+                        <p class="font-semibold" style="color:#0A0A0A;">
+                            <a href="{{ $store->url }}" target="_blank" class="hover:underline" style="color:#D4AF37;">
+                                {{ $store->url }}
+                            </a>
                         </p>
                     </div>
-                    <div>
-                        <p class="text-gray-600 text-sm">Taux de TVA</p>
-                        <p class="text-lg font-medium text-gray-900">{{ $store->tax_rate }}%</p>
+
+                    <!-- Tax Rate -->
+                    <div class="p-6 border-r" style="border-color:#E5E5E5;">
+                        <p class="text-xs uppercase tracking-wider mb-1" style="color:#666666;">
+                            {{ __('Tax Rate') }}
+                        </p>
+                        <p class="font-semibold" style="color:#0A0A0A;">
+                            {{ $store->tax_rate }}%
+                        </p>
                     </div>
-                    <div>
-                        <p class="text-gray-600 text-sm">Stock minimum</p>
-                        <p class="text-lg font-medium text-gray-900">{{ $store->minimum_stock }} unités</p>
+
+                    <!-- Minimum Stock -->
+                    <div class="p-6">
+                        <p class="text-xs uppercase tracking-wider mb-1" style="color:#666666;">
+                            {{ __('Minimum Stock Alert') }}
+                        </p>
+                        <p class="font-semibold" style="color:#0A0A0A;">
+                            {{ $store->minimum_stock }}
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <!-- SSL certificate -->
-            <flux:card class="mb-6">
-                <flux:heading size="lg" class="mb-4">{{ __('SSL certificate') }}</flux:heading>
-                <div class="flex items-center gap-3">
-                    <flux:badge :color="$store->ssl_certificate_status === 'active' ? 'green' : ($store->ssl_certificate_status === 'expired' ? 'red' : 'yellow')">
-                        {{ ucfirst($store->ssl_certificate_status) }}
-                    </flux:badge>
-                    @if($store->ssl_certificate_status !== 'active')
-                        <span class="text-sm text-zinc-600 dark:text-zinc-400">{{ __('Certificate not active') }}</span>
-                    @else
-                        <span class="text-sm text-green-600 dark:text-green-400">{{ __('Valid certificate') }}</span>
-                    @endif
-                </div>
-            </flux:card>
-
-            <!-- API key -->
-            <flux:card class="mb-6">
-                <flux:heading size="lg" class="mb-4">{{ __('API key') }}</flux:heading>
-                <div class="flex items-center gap-3 mb-4">
-                    <code class="flex-1 bg-zinc-100 dark:bg-white/10 px-4 py-3 rounded font-mono text-sm overflow-auto">{{ $store->api_key }}</code>
-                    <flux:button type="button" variant="primary" data-copy="{{ $store->api_key }}" onclick="navigator.clipboard.writeText(this.getAttribute('data-copy')).then(()=>alert('{{ __('API key copied') }}'))">{{ __('Copy') }}</flux:button>
-                </div>
-                <form action="{{ route('stores.regenerateApiKey', $store) }}" method="POST" onsubmit="return confirm('{{ __('Regenerate API key? The old key will stop working.') }}');">
-                    @csrf
-                    <flux:button type="submit" variant="danger" size="sm">{{ __('Regenerate API key') }}</flux:button>
-                </form>
-            </flux:card>
-
-            <!-- Created / Updated -->
-            <div class="text-sm text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-white/10 pt-4">
-                <p>{{ __('Created at') }} {{ $store->created_at->format('d/m/Y H:i') }}</p>
-                <p>{{ __('Updated at') }} {{ $store->updated_at->format('d/m/Y H:i') }}</p>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex gap-4 pt-4 border-t">
-                @can('stores.update')
-                    <a href="{{ route('stores.edit', $store) }}" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded text-center">
-                        Éditer
-                    </a>
-                @endcan
-
-                @can('stores.delete')
-                    <form action="{{ route('stores.destroy', $store) }}" method="POST" class="flex-1" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce magasin?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                            Supprimer
+            <!-- API Key Section -->
+            <div class="border-t" style="border-color:#E5E5E5;">
+                <div class="p-6">
+                    <p class="text-xs uppercase tracking-wider mb-2" style="color:#666666;">
+                        {{ __('API Key') }}
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <input type="password" 
+                               value="{{ $store->api_key }}" 
+                               id="apiKey"
+                               readonly
+                               class="flex-1 px-4 py-3 rounded-xl border font-mono text-sm"
+                               style="border-color:#E5E5E5; color:#0A0A0A; background-color:#F8F8F8;">
+                        <button type="button" 
+                                onclick="toggleApiKey()"
+                                class="px-4 py-2 text-sm font-semibold rounded-lg border transition-all duration-300"
+                                style="border-color:#E5E5E5; color:#666666;"
+                                onmouseover="this.style.backgroundColor='#F8F8F8';"
+                                onmouseout="this.style.backgroundColor='transparent';">
+                            {{ __('Show') }}
                         </button>
-                    </form>
-                @endcan
+                        <button type="button" 
+                                onclick="copyToClipboard('{{ $store->api_key }}')"
+                                class="px-4 py-2 text-sm font-semibold rounded-lg border transition-all duration-300"
+                                style="border-color:#E5E5E5; color:#666666;"
+                                onmouseover="this.style.backgroundColor='#F8F8F8';"
+                                onmouseout="this.style.backgroundColor='transparent';">
+                            {{ __('Copy') }}
+                        </button>
+                    </div>
+                </div>
             </div>
 
+            <!-- Additional Info -->
+            <div class="border-t" style="border-color:#E5E5E5;">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+                    <div class="p-6 border-r" style="border-color:#E5E5E5;">
+                        <p class="text-xs uppercase tracking-wider mb-1" style="color:#666666;">
+                            {{ __('Store ID') }}
+                        </p>
+                        <p class="font-mono text-sm" style="color:#0A0A0A;">
+                            #{{ $store->id }}
+                        </p>
+                    </div>
+                    <div class="p-6 border-r" style="border-color:#E5E5E5;">
+                        <p class="text-xs uppercase tracking-wider mb-1" style="color:#666666;">
+                            {{ __('Created At') }}
+                        </p>
+                        <p class="font-semibold text-sm" style="color:#0A0A0A;">
+                            {{ $store->created_at->format('d/m/Y') }}
+                        </p>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-xs uppercase tracking-wider mb-1" style="color:#666666;">
+                            {{ __('Last Updated') }}
+                        </p>
+                        <p class="font-semibold text-sm" style="color:#0A0A0A;">
+                            {{ $store->updated_at->format('d/m/Y H:i') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        function toggleApiKey() {
+            const input = document.getElementById('apiKey');
+            const button = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '{{ __("Hide") }}';
+            } else {
+                input.type = 'password';
+                button.textContent = '{{ __("Show") }}';
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('{{ __("API key copied to clipboard!") }}');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
 </x-app-layout>
