@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 
 class Store extends Model
 {
@@ -21,11 +22,16 @@ class Store extends Model
         'webhook_secret',
         'webhook_secret_encrypted',
         'webhook_token',
+        'shopify_domain',
+        'shopify_token',
+        'shopify_connected_at',
+        'store_token',
     ];
 
     protected $casts = [
         'tax_rate' => 'decimal:2',
         'minimum_stock' => 'integer',
+        'shopify_connected_at' => 'datetime',
     ];
 
     /**
@@ -40,6 +46,11 @@ class Store extends Model
             if (empty($model->api_key)) {
                 $model->api_key = self::generateUniqueApiKey();
             }
+            
+            // Auto-generate store_token for webhook URL
+            if (empty($model->store_token)) {
+                $model->store_token = self::generateUniqueStoreToken();
+            }
         });
     }
 
@@ -53,6 +64,18 @@ class Store extends Model
         } while (self::where('api_key', $key)->exists());
 
         return $key;
+    }
+
+    /**
+     * Generate a unique store token for webhook URL.
+     */
+    public static function generateUniqueStoreToken(): string
+    {
+        do {
+            $token = Str::random(32);
+        } while (self::where('store_token', $token)->exists());
+
+        return $token;
     }
 
     /**
@@ -90,6 +113,14 @@ class Store extends Model
     }
 
     /**
+     * Get all Shopify orders for this store.
+     */
+    public function shopifyOrders()
+    {
+        return $this->hasMany(ShopifyOrder::class);
+    }
+
+    /**
      * Check if SSL certificate is active.
      */
     public function hasActiveSSL(): bool
@@ -120,5 +151,118 @@ class Store extends Model
     public function getPriceWithTax(float $price): float
     {
         return round($price + $this->calculateTax($price), 2);
+    }
+
+    // ============================================================
+    // Shopify Integration Methods
+    // ============================================================
+
+    /**
+     * Check if store is connected to Shopify.
+     */
+    public function isShopifyConnected(): bool
+    {
+        return !empty($this->shopify_domain) && !empty($this->shopify_token);
+    }
+
+    /**
+     * Get the decrypted Shopify access token.
+     */
+    public function getShopifyToken(): ?string
+    {
+        if (empty($this->shopify_token)) {
+            return null;
+        }
+
+        try {
+            return Crypt::decryptString($this->shopify_token);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the decrypted webhook secret.
+     */
+    public function getWebhookSecret(): ?string
+    {
+        if (empty($this->webhook_secret_encrypted)) {
+            return null;
+        }
+
+        try {
+            return Crypt::decryptString($this->webhook_secret_encrypted);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the webhook URL for this store.
+     */
+    public function getWebhookUrl(): ?string
+    {
+        if (empty($this->store_token)) {
+            return null;
+        }
+
+        return route('shopify.webhook.order.creation', ['store_token' => $this->store_token]);
+    }
+
+    /**
+     * Regenerate the store token.
+     */
+    public function regenerateStoreToken(): string
+    {
+        $this->update([
+            'store_token' => self::generateUniqueStoreToken(),
+        ]);
+
+        return $this->store_token;
+    }
+
+    /**
+     * Find store by store token.
+     */
+    public static function findByStoreToken(string $token): ?self
+    {
+        return self::where('store_token', $token)->first();
+    }
+
+    /**
+     * Connect store to Shopify.
+     */
+    public function connectToShopify(string $domain, string $token): void
+    {
+        $this->update([
+            'shopify_domain' => $domain,
+            'shopify_token' => Crypt::encryptString($token),
+            'shopify_connected_at' => now(),
+        ]);
+    }
+
+    /**
+     * Disconnect store from Shopify.
+     */
+    public function disconnectFromShopify(): void
+    {
+        $this->update([
+            'shopify_domain' => null,
+            'shopify_token' => null,
+            'shopify_connected_at' => null,
+            'webhook_secret' => null,
+            'webhook_secret_encrypted' => null,
+        ]);
+    }
+
+    /**
+     * Set webhook secret (encrypts and stores).
+     */
+    public function setWebhookSecret(string $secret): void
+    {
+        $this->update([
+            'webhook_secret' => null, // Don't store plain text
+            'webhook_secret_encrypted' => Crypt::encryptString($secret),
+        ]);
     }
 }

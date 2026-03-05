@@ -22,6 +22,12 @@ class StoreController extends Controller
 
 public function shopifyConfig(Store $store)
 {
+    // Auto-generate store_token if not exists
+    if (!$store->store_token) {
+        $store->store_token = Store::generateUniqueStoreToken();
+        $store->save();
+    }
+
     return view('stores.shopify', compact('store'));
 }
 
@@ -183,7 +189,7 @@ public function updateWebhookSecret(Request $request, Store $store)
         }
 
         // Step 2: Register webhook on Shopify
-        $webhookUrl = route('shopify.webhook.order');
+        $webhookUrl = route('shopify.webhook.order.creation', ['store_token' => $store->store_token]);
         
         $webhookResponse = Http::withHeaders([
             'X-Shopify-Access-Token' => $accessToken,

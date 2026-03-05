@@ -86,12 +86,15 @@ class ShopifyController extends Controller
         try {
             $token = decrypt($store->shopify_token);
 
+            // Use the new token-based webhook URL
+            $webhookUrl = route('shopify.webhook.order.creation', ['store_token' => $store->store_token]);
+
             Http::withHeaders([
                 'X-Shopify-Access-Token' => $token
             ])->post("https://{$store->shopify_domain}/admin/api/2023-10/webhooks.json", [
                 "webhook" => [
                     "topic" => "orders/create",
-                    "address" => route('shopify.webhook.order'),
+                    "address" => $webhookUrl,
                     "format" => "json"
                 ]
             ]);

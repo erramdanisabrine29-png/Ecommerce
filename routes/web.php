@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopifyController;
+use App\Http\Controllers\ShopifyWebhookController;
 use App\Http\Controllers\OrderController;
 
 // Public routes
@@ -97,6 +98,16 @@ Route::get('/shopify/callback', [ShopifyController::class, 'callback'])->name('s
 
 // Shopify webhook route (public - for receiving orders from Shopify)
 Route::post('/webhook/shopify/orders', [ShopifyController::class, 'handleWebhookOrder'])->name('shopify.webhook.order');
+
+// Token-based webhook route - NEW: /webhook/shopify/order/{store_token}/creation
+Route::post('/webhook/shopify/order/{store_token}/creation', [ShopifyWebhookController::class, 'handleOrderCreation'])
+    ->name('shopify.webhook.order.creation');
+
+// Webhook testing routes (public)
+Route::get('/webhook/shopify/test/{store_token}', [ShopifyWebhookController::class, 'testWebhook'])
+    ->name('shopify.webhook.test');
+Route::get('/webhook/shopify/orders/{store_token}', [ShopifyWebhookController::class, 'listOrders'])
+    ->name('shopify.webhook.list');
 
 // Legacy webhook route (token-based)
 Route::post('/webhook/shopify/order/{token}/creation', [ShopifyController::class, 'webhook'])->name('shopify.webhook.legacy');

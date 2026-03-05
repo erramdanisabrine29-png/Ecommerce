@@ -417,13 +417,13 @@
 
                 <div class="input-line">
                     <input type="text"
-                           value="{{ route('shopify.webhook.order') }}"
+                           value="{{ $store->getWebhookUrl() }}"
                            readonly>
 
                     <button type="button"
                             class="copy-btn"
-                            data-text="{{ route('shopify.webhook.order') }}"
-                            onclick="copyToClipboard(this, '{{ route('shopify.webhook.order') }}')">
+                            data-text="{{ $store->getWebhookUrl() }}"
+                            onclick="copyToClipboard(this, '{{ $store->getWebhookUrl() }}')">
                         <span class="btn-text">Copier</span>
                     </button>
                 </div>
