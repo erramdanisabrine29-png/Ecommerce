@@ -3,262 +3,21 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ORDA – Plateforme E-Commerce Multi-Sites</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800" rel="stylesheet" />
+    <title>ORDA – Centralisez votre E-Commerce Multi-Sites</title>
     
-    <style>
-        :root {
-            --color-black: #0A0A0A;
-            --color-black-light: #151515;
-            --color-gold: #D4AF37;
-            --color-gold-light: #F2D06B;
-            --color-white: #FFFFFF;
-            --color-gray: #888888;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border-glass: rgba(255, 255, 255, 0.1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--color-black); 
-            color: var(--color-white);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Background Effects */
-        .bg-glow {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% -20%, #2a220a 0%, transparent 50%);
-            z-index: -1;
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-        /* Navigation */
-        header {
-            padding: 24px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-glass);
-        }
-        .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: 800; color: var(--color-white); text-decoration: none; }
-        .logo span { color: var(--color-gold); }
-        .nav-links { display: flex; gap: 30px; }
-        .nav-links a { color: var(--color-gray); text-decoration: none; font-size: 14px; transition: 0.3s; }
-        .nav-links a:hover { color: var(--color-gold); }
-
-        /* Hero Section - Directement inspiré de la vidéo */
-        .hero {
-            padding: 100px 0 60px;
-            text-align: center;
-        }
-        .hero-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            background: var(--glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 100px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 24px;
-            color: var(--color-gold);
-        }
-        .hero h1 {
-            font-size: clamp(40px, 8vw, 80px);
-            font-weight: 800;
-            line-height: 1;
-            margin-bottom: 30px;
-            letter-spacing: -3px;
-        }
-        .hero h1 span {
-            background: linear-gradient(to right, var(--color-gold), var(--color-gold-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            max-width: 600px;
-            margin: 0 auto 40px;
-            color: var(--color-gray);
-            font-size: 18px;
-        }
-
-        /* Bento Grid - Le style clé de la vidéo */
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-auto-rows: 240px;
-            gap: 20px;
-            margin-top: 40px;
-        }
-        .bento-item {
-            background: var(--color-black-light);
-            border: 1px solid var(--border-glass);
-            border-radius: 24px;
-            padding: 30px;
-            position: relative;
-            overflow: hidden;
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        .bento-item:hover {
-            border-color: var(--color-gold);
-            transform: translateY(-5px);
-        }
-        .large { grid-column: span 2; }
-        .tall { grid-row: span 2; }
-
-        .bento-item h3 { font-size: 20px; margin-bottom: 10px; }
-        .bento-item p { color: var(--color-gray); font-size: 14px; }
-
-        /* Dashboard Mockup - Floating Style */
-        .mockup {
-            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .bar { 
-            height: 8px; background: var(--glass); border-radius: 4px; margin-bottom: 10px; 
-            overflow: hidden; position: relative;
-        }
-        .bar-fill { 
-            height: 100%; background: var(--color-gold); 
-            animation: fill 2s ease-out forwards;
-            width: 0%;
-        }
-
-        @keyframes fill { to { width: 70%; } }
-
-        /* Buttons */
-        .btn {
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: 0.3s;
-        }
-        .btn-gold {
-            background: var(--color-gold);
-            color: var(--color-black);
-        }
-        .btn-gold:hover {
-            background: var(--color-gold-light);
-            transform: scale(1.05);
-        }
-        .btn-outline {
-            border: 1px solid var(--border-glass);
-            color: var(--white);
-        }
-
-        /* Responsive */
-        @media (max-width: 900px) {
-            .bento-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
-            .large, .tall { grid-column: span 1; grid-row: span 1; }
-        }
-    </style>
-</head>
-<body>
-    <div class="bg-glow"></div>
-
-    <header>
-        <div class="container">
-            <div class="nav-inner">
-                <a href="#" class="logo">ORDA<span>.</span></a>
-                <nav class="nav-links">
-                    <a href="#features">Features</a>
-                    <a href="#solution">Solution</a>
-                    <a href="#pricing">Tarifs</a>
-                </nav>
-                <a href="#" class="btn btn-outline" style="padding: 10px 20px; font-size: 13px;">Login</a>
-            </div>
-        </div>
-    </header>
-
-    <section class="hero">
-        <div class="container">
-            <div class="hero-badge">Plateforme Next-Gen</div>
-            <h1>Centralisez Vos Ventes<br><span>Multi-Sites.</span></h1>
-            <p>Simplifiez la gestion de votre empire e-commerce avec une interface unifiée, rapide et intelligente.</p>
-            <div style="display: flex; gap: 15px; justify-content: center;">
-                <a href="#" class="btn btn-gold">Démarrer gratuitement</a>
-                <a href="#" class="btn btn-outline">Voir la démo</a>
-            </div>
-
-            <div class="bento-grid">
-                <div class="bento-item large">
-                    <div style="text-align: left;">
-                        <h3>Gestion Dispersée ?</h3>
-                        <p>Ne perdez plus de temps à passer d'un onglet à l'autre. ORDA synchronise tout en temps réel.</p>
-                        <div class="mockup">
-                            <div class="bar"><div class="bar-fill" style="width: 80%;"></div></div>
-                            <div class="bar"><div class="bar-fill" style="width: 40%; background: #444;"></div></div>
-                            <div class="bar"><div class="bar-fill" style="width: 60%;"></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bento-item tall">
-                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
-                        <span style="font-size: 60px; font-weight: 800; color: var(--color-gold);">+250%</span>
-                        <p>D'efficacité opérationnelle constatée par nos clients.</p>
-                    </div>
-                </div>
-
-                <div class="bento-item">
-                    <h3>Sécurité Pro</h3>
-                    <p>Vos données sont protégées par un cryptage de grade bancaire.</p>
-                    <div style="font-size: 40px; margin-top: 20px;">🛡️</div>
-                </div>
-
-                <div class="bento-item">
-                    <h3>Multi-Boutiques</h3>
-                    <p>Shopify, WooCommerce, Magento... Connectez tout.</p>
-                    <div style="font-size: 40px; margin-top: 20px;">🌐</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer style="padding: 60px 0; text-align: center; border-top: 1px solid var(--border-glass); margin-top: 100px;">
-        <div class="container">
-            <p style="color: var(--color-gray);">&copy; 2024 ORDA. Elevating E-commerce Management.</p>
-        </div>
-    </footer>
-</body>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="ORDA - Plateforme centralisée de commerce électronique multi-sites.">
-    <title>ORDA – Centralisez et Optimisez Vos Ventes Multi-Sites</title>
-
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800" rel="stylesheet" />
 
     <style>
         :root {
-            --color-black: #0A0A0A;
-            --color-black-light: #161616;
+            --color-black: #050505;
+            --color-black-light: #121212;
             --color-gold: #D4AF37;
-            --color-gold-light: #E8C966;
-            --color-gold-dark: #B8962E;
+            --color-gold-glow: rgba(212, 175, 55, 0.4);
             --color-white: #FFFFFF;
-            --color-white-off: #F9F9F9;
-            --color-gray-100: #F3F3F3;
-            --color-gray-200: #E5E5E5;
-            --color-gray-400: #999999;
-            --color-gray-600: #444444;
+            --color-gray-text: #A1A1AA;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -266,170 +25,141 @@
         html { scroll-behavior: smooth; }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: var(--color-black); 
-            background-color: var(--color-white); 
+            background-color: var(--color-black); 
+            color: var(--color-white); 
             line-height: 1.6;
             overflow-x: hidden;
         }
 
+        /* Layout Helpers */
         .container { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+        section { padding: 120px 0; position: relative; }
 
-        /* --- Typography --- */
-        h1, h2, h3 { font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
-        .section-tag {
-            display: inline-block;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--color-gold);
-            margin-bottom: 16px;
+        /* Typography */
+        h1, h2, h3 { line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
+        .text-gradient {
+            background: linear-gradient(135deg, #FFF 0%, var(--color-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* --- Buttons --- */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            padding: 14px 28px;
-            border-radius: 100px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            border: none;
-        }
-        .btn-primary { background: var(--color-gold); color: var(--color-black); }
-        .btn-primary:hover { background: var(--color-gold-light); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3); }
-        .btn-outline { border: 1px solid var(--color-gray-200); background: transparent; color: var(--color-black); }
-        .btn-outline:hover { background: var(--color-black); color: var(--color-white); border-color: var(--color-black); }
-
-        /* --- Header --- */
+        /* Header */
         .header {
             position: fixed; top: 0; width: 100%; z-index: 1000;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
         }
         .header-inner { display: flex; justify-content: space-between; align-items: center; height: 80px; }
-        .logo { font-size: 24px; font-weight: 800; color: var(--color-black); }
+        .logo { font-size: 24px; font-weight: 800; color: var(--color-white); text-decoration: none; }
         .logo span { color: var(--color-gold); }
         .nav { display: flex; gap: 32px; }
-        .nav-link { font-size: 14px; font-weight: 600; color: var(--color-gray-600); }
+        .nav-link { color: var(--color-gray-text); text-decoration: none; font-size: 14px; font-weight: 500; transition: var(--transition); }
         .nav-link:hover { color: var(--color-gold); }
 
-        /* --- Hero Section with Video Background --- */
-        .hero {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            color: white;
-            padding-top: 80px;
-            overflow: hidden;
+        /* Buttons */
+        .btn {
+            padding: 14px 28px; border-radius: 10px; font-weight: 600; font-size: 14px;
+            cursor: pointer; transition: var(--transition); border: none; text-decoration: none;
+            display: inline-flex; align-items: center; justify-content: center;
         }
+        .btn-primary { background: var(--color-gold); color: var(--color-black); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 25px var(--color-gold-glow); }
+        .btn-outline { background: transparent; border: 1px solid var(--glass-border); color: var(--color-white); }
+        .btn-outline:hover { background: var(--glass-border); }
 
-        .video-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; background: #000;
+        /* Hero Section with Video Background */
+        .hero {
+            height: 100vh; display: flex; align-items: center; overflow: hidden;
+            background: #000; padding-top: 80px;
         }
-        .video-bg iframe {
-            width: 100vw; height: 56.25vw; /* 16:9 ratio */
-            min-height: 100vh; min-width: 177.77vh;
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none; opacity: 0.6;
+        .video-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            opacity: 0.5; filter: grayscale(0.2) contrast(1.1);
         }
+        .video-container iframe { width: 100vw; height: 100vh; pointer-events: none; object-fit: cover; }
         .hero-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.8) 100%);
-            z-index: 0;
+            background: radial-gradient(circle at center, transparent 0%, var(--color-black) 90%);
+            z-index: 1;
         }
-
-        .hero-content {
-            position: relative; z-index: 1;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+        .hero-content { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .hero-badge {
+            display: inline-block; padding: 6px 16px; background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--color-gold); color: var(--color-gold);
+            border-radius: 100px; font-size: 12px; font-weight: 700; margin-bottom: 24px;
         }
         .hero h1 { font-size: clamp(40px, 5vw, 64px); margin-bottom: 24px; }
-        .hero p { font-size: 18px; color: rgba(255,255,255,0.8); margin-bottom: 32px; max-width: 500px; }
+        .hero p { font-size: 18px; color: var(--color-gray-text); margin-bottom: 32px; max-width: 90%; }
 
-        /* --- Modern Dashboard Mockup --- */
-        .dashboard-container {
-            background: rgba(255, 255, 255, 0.05);
+        /* Dynamic Dashboard Mockup */
+        .dashboard-ui {
+            background: rgba(20, 20, 20, 0.6);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 30px;
             box-shadow: 0 40px 100px rgba(0,0,0,0.5);
             animation: float 6s ease-in-out infinite;
         }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
-        .mockup-header { display: flex; gap: 8px; margin-bottom: 20px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot-1 { background: #ff5f56; } .dot-2 { background: #ffbd2e; } .dot-3 { background: #27c93f; }
-
-        .mockup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .mockup-card {
-            background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .mockup-label { font-size: 11px; color: var(--color-gold); text-transform: uppercase; margin-bottom: 5px; }
-        .mockup-val { font-size: 20px; font-weight: 700; }
         
-        .mockup-chart {
-            margin-top: 15px; height: 100px; display: flex; align-items: flex-end; gap: 8px;
-        }
-        .bar { 
-            flex: 1; background: var(--color-gold); border-radius: 4px 4px 0 0; 
-            animation: grow 2s ease-out forwards; transform-origin: bottom; transform: scaleY(0);
-        }
-        @keyframes grow { to { transform: scaleY(1); } }
+        .db-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .db-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; }
+        .db-val { font-size: 24px; font-weight: 800; color: var(--color-gold); }
+        .db-label { font-size: 12px; color: var(--color-gray-text); text-transform: uppercase; }
+        .db-chart { height: 150px; display: flex; align-items: flex-end; gap: 10px; padding-top: 20px; }
+        .db-bar { flex: 1; background: linear-gradient(to top, var(--color-gold), transparent); border-radius: 4px; transition: height 1s ease; }
 
-        /* --- Sections General --- */
-        section { padding: 120px 0; }
-        .text-center { text-align: center; margin-bottom: 60px; }
+        /* Sections Styling */
+        .section-tag { color: var(--color-gold); font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 12px; }
+        .section-title { font-size: 42px; margin-bottom: 48px; }
 
-        /* --- Bento Grid Solution --- */
-        .bento-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+        /* Problem/Solution Cards */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .feature-card {
+            background: var(--color-black-light);
+            border: 1px solid var(--glass-border);
+            padding: 40px; border-radius: 20px; transition: var(--transition);
         }
-        .bento-item {
-            background: var(--color-white-off); padding: 40px; border-radius: 24px;
-            border: 1px solid var(--color-gray-100); transition: var(--transition);
-        }
-        .bento-item:hover { transform: translateY(-10px); border-color: var(--color-gold); }
-        .bento-item.dark { background: var(--color-black); color: white; grid-column: span 2; }
-        .icon-box { font-size: 32px; margin-bottom: 20px; display: block; }
+        .feature-card:hover { border-color: var(--color-gold); transform: translateY(-10px); background: #181818; }
+        .feature-icon { font-size: 32px; margin-bottom: 20px; display: block; }
+        .feature-card h3 { margin-bottom: 16px; font-size: 20px; }
+        .feature-card p { color: var(--color-gray-text); font-size: 15px; }
 
-        /* --- FAQ --- */
-        .faq-item {
-            max-width: 800px; margin: 0 auto 16px; 
-            background: var(--color-white-off); padding: 24px; border-radius: 16px;
+        /* Roles (Horizontal Scrolling on mobile) */
+        .roles-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .role-pill { 
+            text-align: center; padding: 30px 20px; background: var(--glass); 
+            border: 1px solid var(--glass-border); border-radius: 20px; 
         }
-        .faq-item h3 { font-size: 18px; margin-bottom: 10px; color: var(--color-gold-dark); }
+        .role-pill:hover { border-color: var(--color-gold); color: var(--color-gold); }
 
-        /* --- CTA --- */
+        /* FAQ */
+        .faq-grid { max-width: 800px; margin: 0 auto; }
+        .faq-item { background: var(--glass); margin-bottom: 15px; border-radius: 12px; padding: 25px; border: 1px solid var(--glass-border); }
+        .faq-item h3 { font-size: 18px; margin-bottom: 10px; color: var(--color-gold); }
+
+        /* CTA Section */
         .cta-box {
-            background: var(--color-black); color: white; padding: 80px; border-radius: 40px;
-            text-align: center; position: relative; overflow: hidden;
-        }
-        .cta-box::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80');
+            background-size: cover; padding: 80px; border-radius: 40px; text-align: center;
+            border: 1px solid var(--color-gold-glow);
         }
 
-        /* --- Footer --- */
-        footer { padding: 60px 0; border-top: 1px solid var(--color-gray-100); }
-        .footer-wrap { display: flex; justify-content: space-between; align-items: center; }
+        /* Footer */
+        .footer { padding: 60px 0; border-top: 1px solid var(--glass-border); color: var(--color-gray-text); font-size: 14px; }
+        .footer-flex { display: flex; justify-content: space-between; align-items: center; }
 
-        /* --- Responsive --- */
+        /* Responsive */
         @media (max-width: 992px) {
             .hero-content { grid-template-columns: 1fr; text-align: center; }
             .hero p { margin: 0 auto 32px; }
-            .bento-grid { grid-template-columns: 1fr; }
-            .bento-item.dark { grid-column: span 1; }
+            .roles-grid { grid-template-columns: 1fr 1fr; }
+            .cta-box { padding: 40px 20px; }
+        }
+        @media (max-width: 600px) {
             .nav { display: none; }
+            .roles-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -440,60 +170,55 @@
             <div class="header-inner">
                 <a href="#" class="logo">ORDA<span>.</span></a>
                 <nav class="nav">
-                    <a href="#problem" class="nav-link">Le Problème</a>
-                    <a href="#solution" class="nav-link">La Solution</a>
-                    <a href="#performance" class="nav-link">Performance</a>
+                    <a href="#problem" class="nav-link">Défis</a>
+                    <a href="#solution" class="nav-link">Solution</a>
+                    <a href="#roles" class="nav-link">Rôles</a>
                     <a href="#faq" class="nav-link">FAQ</a>
                 </nav>
-                <div class="actions">
-                    <a href="#" class="btn btn-outline" style="margin-right: 12px; padding: 10px 20px;">Login</a>
-                    <a href="#cta" class="btn btn-primary" style="padding: 10px 20px;">Essai Gratuit</a>
+                <div class="header-btns">
+                    <a href="#" class="btn btn-outline" style="margin-right: 10px;">Connexion</a>
+                    <a href="#cta" class="btn btn-primary">Démo</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <section class="hero">
-        <div class="video-bg">
-            <iframe src="https://www.youtube.com/embed/rP7D7-0p0Ew?autoplay=1&mute=1&controls=0&loop=1&playlist=rP7D7-0p0Ew&modestbranding=1&rel=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+    <section class="hero" id="home">
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
         <div class="hero-overlay"></div>
         
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <span class="section-tag" style="color: var(--color-gold-light);">Intelligence Artificielle</span>
-                    <h1>Centralisez Vos Ventes <span style="color: var(--color-gold);">Multi-Sites</span></h1>
-                    <p>La plateforme Enterprise pour orchestrer vos boutiques Shopify, WooCommerce et Amazon depuis un centre de commande unique.</p>
-                    <div class="hero-btns">
-                        <a href="#cta" class="btn btn-primary">Réserver une Démo</a>
-                        <a href="#solution" class="btn" style="color: white; border: 1px solid rgba(255,255,255,0.3); margin-left: 15px;">Explorer</a>
-                    </div>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <span class="hero-badge">Nouveauté 2024</span>
+                <h1 class="text-gradient">Centralisez votre Empire E-commerce</h1>
+                <p>ORDA unifie vos boutiques Shopify, WooCommerce et Magento dans un tableau de bord unique piloté par l'IA.</p>
+                <div class="hero-btns">
+                    <a href="#cta" class="btn btn-primary" style="margin-right: 15px;">Démarrer l'essai gratuit</a>
+                    <a href="#solution" class="btn btn-outline">Voir la vidéo</a>
                 </div>
+            </div>
 
-                <div class="dashboard-container">
-                    <div class="mockup-header">
-                        <div class="dot dot-1"></div>
-                        <div class="dot dot-2"></div>
-                        <div class="dot dot-3"></div>
-                    </div>
-                    <div class="mockup-grid">
-                        <div class="mockup-card">
-                            <div class="mockup-label">Commandes</div>
-                            <div class="mockup-val">12,847</div>
+            <div class="hero-image">
+                <div class="dashboard-ui">
+                    <div class="db-grid">
+                        <div class="db-card">
+                            <span class="db-label">Commandes</span>
+                            <div class="db-val">12,847</div>
                         </div>
-                        <div class="mockup-card">
-                            <div class="mockup-label">Revenus</div>
-                            <div class="mockup-val" style="color: var(--color-gold-light);">$284,592</div>
+                        <div class="db-card">
+                            <span class="db-label">Revenus</span>
+                            <div class="db-val">$284.5k</div>
                         </div>
                     </div>
-                    <div class="mockup-chart">
-                        <div class="bar" style="height: 40%; animation-delay: 0.1s;"></div>
-                        <div class="bar" style="height: 70%; animation-delay: 0.2s;"></div>
-                        <div class="bar" style="height: 55%; animation-delay: 0.3s;"></div>
-                        <div class="bar" style="height: 90%; animation-delay: 0.4s;"></div>
-                        <div class="bar" style="height: 65%; animation-delay: 0.5s;"></div>
-                        <div class="bar" style="height: 80%; animation-delay: 0.6s;"></div>
+                    <div class="db-chart">
+                        <div class="db-bar" style="height: 40%"></div>
+                        <div class="db-bar" style="height: 70%"></div>
+                        <div class="db-bar" style="height: 50%"></div>
+                        <div class="db-bar" style="height: 90%"></div>
+                        <div class="db-bar" style="height: 65%"></div>
+                        <div class="db-bar" style="height: 80%"></div>
                     </div>
                 </div>
             </div>
@@ -502,51 +227,50 @@
 
     <section id="problem">
         <div class="container">
-            <div class="text-center">
-                <span class="section-tag">Analyse du Marché</span>
-                <h2>Le Chaos du Multi-Boutiques</h2>
-            </div>
-            <div class="bento-grid">
-                <div class="bento-item">
-                    <span class="icon-box">🏪</span>
-                    <h3>Dispersion</h3>
-                    <p>Trop d'onglets, trop de mots de passe, trop d'erreurs humaines.</p>
+            <span class="section-tag">Le Constat</span>
+            <h2 class="section-title">Le chaos multi-sites s'arrête ici.</h2>
+            <div class="card-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🏪</span>
+                    <h3>Gestion Fragmentée</h3>
+                    <p>Fini les 10 onglets ouverts. Gérez tout depuis une source de vérité unique.</p>
                 </div>
-                <div class="bento-item dark">
-                    <span class="icon-box">📊</span>
-                    <h3>L'Aveuglement Statistique</h3>
-                    <p>Sans une vue agrégée, vous pilotez votre entreprise à l'aveugle. ORDA fusionne vos données en temps réel pour une clarté absolue.</p>
+                <div class="feature-card">
+                    <span class="feature-icon">📉</span>
+                    <h3>Données Aveugles</h3>
+                    <p>Visualisez vos marges réelles en temps réel, sur l'ensemble de vos canaux.</p>
                 </div>
-                <div class="bento-item">
-                    <span class="icon-box">⚠️</span>
-                    <h3>Risques Logistiques</h3>
-                    <p>Les stocks non synchronisés sont les ennemis de votre croissance.</p>
+                <div class="feature-card">
+                    <span class="feature-icon">⚠️</span>
+                    <h3>Erreurs de Stock</h3>
+                    <p>Synchronisation automatique pour éviter les ruptures et les ventes perdues.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="solution" style="background: var(--color-white-off);">
+    <section id="roles" style="background: var(--color-black-light);">
         <div class="container">
-            <div class="text-center">
-                <span class="section-tag">Notre Solution</span>
-                <h2>Un Écosystème Unifié</h2>
+            <div style="text-align: center; margin-bottom: 60px;">
+                <span class="section-tag">Écosystème</span>
+                <h2 class="section-title">Une solution pour chaque profil</h2>
             </div>
-            <div class="bento-grid">
-                <div class="bento-item dark" style="grid-column: span 1;">
-                    <span class="icon-box" style="color: var(--color-gold);">01</span>
-                    <h3>Sync Temps Réel</h3>
-                    <p>Chaque vente met à jour l'ensemble de votre inventaire instantanément.</p>
+            <div class="roles-grid">
+                <div class="role-pill">
+                    <h3>Admin</h3>
+                    <p>Contrôle total</p>
                 </div>
-                <div class="bento-item">
-                    <span class="icon-box">🛡️</span>
-                    <h3>Sécurité Bancaire</h3>
-                    <p>Vos données sont protégées par un chiffrement de bout en bout conforme aux normes ISO.</p>
+                <div class="role-pill">
+                    <h3>Manager</h3>
+                    <p>Stratégie & Analytics</p>
                 </div>
-                <div class="bento-item">
-                    <span class="icon-box">⚡</span>
-                    <h3>Vitesse de Traitement</h3>
-                    <p>Réduisez le temps de gestion des commandes de 65% dès le premier mois.</p>
+                <div class="role-pill">
+                    <h3>Logistique</h3>
+                    <p>Expédition rapide</p>
+                </div>
+                <div class="role-pill">
+                    <h3>Support</h3>
+                    <p>Satisfaction client</p>
                 </div>
             </div>
         </div>
@@ -554,17 +278,17 @@
 
     <section id="faq">
         <div class="container">
-            <div class="text-center">
-                <span class="section-tag">Des questions ?</span>
-                <h2>Questions Fréquentes</h2>
-            </div>
-            <div class="faq-item">
-                <h3>Est-ce compatible avec Shopify ?</h3>
-                <p>Oui, ORDA propose une intégration native pour Shopify, WooCommerce, Magento et les principales places de marché.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Quel est le temps d'installation ?</h3>
-                <p>La configuration initiale prend moins de 30 minutes grâce à nos connecteurs API intelligents.</p>
+            <span class="section-tag">Aide</span>
+            <h2 class="section-title">Questions fréquentes</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>Comment ORDA se connecte à mes sites ?</h3>
+                    <p>Via nos API sécurisées en un clic pour Shopify, WooCommerce et Prestashop.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Mes données sont-elles sécurisées ?</h3>
+                    <p>Chiffrement AES-256 et conformité RGPD stricte pour toutes vos transactions.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -572,21 +296,19 @@
     <section id="cta">
         <div class="container">
             <div class="cta-box">
-                <h2>Prêt à passer à l'échelle supérieure ?</h2>
-                <p style="margin-bottom: 30px; opacity: 0.8;">Rejoignez plus de 500 e-commerçants qui ont centralisé leur succès.</p>
-                <a href="#" class="btn btn-primary">Démarrer l'essai gratuit de 14 jours</a>
+                <h2 style="font-size: 48px; margin-bottom: 20px;">Prêt à passer à l'échelle ?</h2>
+                <p style="color: var(--color-gray-text); margin-bottom: 40px; font-size: 18px;">Rejoignez +500 marchands qui ont automatisé leur croissance.</p>
+                <a href="#" class="btn btn-primary" style="padding: 20px 40px; font-size: 16px;">Demander ma démo personnalisée</a>
             </div>
         </div>
     </section>
 
-    <footer>
+    <footer class="footer">
         <div class="container">
-            <div class="footer-wrap">
-                <div class="logo">ORDA<span>.</span></div>
-                <div style="color: var(--color-gray-600); font-size: 14px;">
-                    &copy; 2024 ORDA Technology. Tous droits réservés.
-                </div>
-                <div class="nav">
+            <div class="footer-flex">
+                <div class="footer-logo">ORDA<span>.</span></div>
+                <div>© 2024 ORDA Platform. Tous droits réservés.</div>
+                <div style="display: flex; gap: 20px;">
                     <a href="#" class="nav-link">Mentions Légales</a>
                     <a href="#" class="nav-link">Confidentialité</a>
                 </div>
@@ -594,5 +316,18 @@
         </div>
     </footer>
 
+    <script>
+        // Simple script to animate the dashboard bars on load
+        window.addEventListener('load', () => {
+            const bars = document.querySelectorAll('.db-bar');
+            bars.forEach(bar => {
+                const height = bar.style.height;
+                bar.style.height = '0';
+                setTimeout(() => {
+                    bar.style.height = height;
+                }, 500);
+            });
+        });
+    </script>
 </body>
 </html>
