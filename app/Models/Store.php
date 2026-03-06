@@ -259,13 +259,35 @@ class Store extends Model
     }
 
     /**
-     * Set webhook secret (encrypts and stores).
+     * Set webhook secret (encrypts and stores both plain and encrypted versions).
      */
     public function setWebhookSecret(string $secret): void
     {
         $this->update([
-            'webhook_secret' => null, // Don't store plain text
+            'webhook_secret' => $secret, // Store plain text for display
             'webhook_secret_encrypted' => Crypt::encryptString($secret),
+        ]);
+    }
+
+    /**
+     * Mark store as connected to Shopify.
+     */
+    public function markAsConnected(): void
+    {
+        $this->update([
+            'connected' => true,
+            'shopify_connected_at' => now(),
+        ]);
+    }
+
+    /**
+     * Mark store as disconnected from Shopify.
+     */
+    public function markAsDisconnected(): void
+    {
+        $this->update([
+            'connected' => false,
+            'shopify_connected_at' => null,
         ]);
     }
 }

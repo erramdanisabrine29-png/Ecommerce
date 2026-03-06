@@ -87,14 +87,8 @@ public function disconnectShopify(Store $store)
 {
     $this->authorize('update', $store);
 
-    $store->update([
-        'shopify_token' => null,
-        'shopify_domain' => null,
-        'shopify_connected_at' => null,
-        'webhook_secret' => null,
-        'webhook_secret_encrypted' => null,
-        'connected' => false,
-    ]);
+    // Use the model's disconnect method
+    $store->disconnectFromShopify();
 
     Log::info('Shopify disconnected for store: ' . $store->id);
 
@@ -174,21 +168,19 @@ public function updateWebhookSecret(Request $request, Store $store)
         // Generate store_token if not exists
         if (!$store->store_token) {
             $store->store_token = Store::generateUniqueStoreToken();
+            $store->save();
         }
 
-        // Encrypt and store the webhook secret
-        $encryptedSecret = encrypt($validated['webhook_secret']);
+        // Use the model's setWebhookSecret method which stores both plain and encrypted
+        $store->setWebhookSecret($validated['webhook_secret']);
+        
+        // Mark store as connected
+        $store->markAsConnected();
 
-        // Update store with webhook secret and mark as connected
-        $store->update([
-            'webhook_secret' => $validated['webhook_secret'],
-            'webhook_secret_encrypted' => $encryptedSecret,
-            'store_token' => $store->store_token,
-            'connected' => true, // Mark as connected when webhook secret is saved
-            'shopify_connected_at' => now(),
+        Log::info('Webhook secret configured successfully for store: ' . $store->id, [
+            'webhook_secret_length' => strlen($validated['webhook_secret']),
+            'connected' => $store->fresh()->connected,
         ]);
-
-        Log::info('Webhook secret configured successfully for store: ' . $store->id);
 
         return redirect()->route('stores.shopify.config', $store->id)
             ->with('success', 'Webhook secret configuré avec succès. Boutique Shopify connectée !');
@@ -211,11 +203,14 @@ public function deleteWebhookSecret(Store $store)
 {
     $this->authorize('update', $store);
 
+    // Clear webhook secret and mark as disconnected
     $store->update([
         'webhook_secret' => null,
         'webhook_secret_encrypted' => null,
-        'connected' => false,
     ]);
+    
+    // Mark as disconnected
+    $store->markAsDisconnected();
 
     return redirect()->route('stores.shopify.config', $store->id)
         ->with('success', 'Webhook secret supprimé. Boutique déconnectée.');

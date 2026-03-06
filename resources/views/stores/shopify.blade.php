@@ -381,7 +381,7 @@
                     @method('PUT')
 
                     <div class="input-line">
-                        <input type="password"
+                        <input type="text"
                                name="webhook_secret"
                                placeholder="Collez votre webhook secret ici..."
                                value="{{ $store->webhook_secret ?? '' }}"
