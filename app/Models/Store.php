@@ -26,6 +26,7 @@ class Store extends Model
         'shopify_token',
         'shopify_connected_at',
         'store_token',
+        'connected',
     ];
 
     protected $casts = [
@@ -159,10 +160,11 @@ class Store extends Model
 
     /**
      * Check if store is connected to Shopify.
+     * Uses the 'connected' boolean field.
      */
     public function isShopifyConnected(): bool
     {
-        return !empty($this->shopify_domain) && !empty($this->shopify_token);
+        return $this->connected === true;
     }
 
     /**
@@ -252,6 +254,7 @@ class Store extends Model
             'shopify_connected_at' => null,
             'webhook_secret' => null,
             'webhook_secret_encrypted' => null,
+            'connected' => false,
         ]);
     }
 
