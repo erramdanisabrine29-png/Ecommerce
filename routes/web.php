@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     // Webhook routes
     Route::post('/stores/{store}/applications/shopify/generate', [StoreController::class, 'generateWebhook'])->name('stores.shopify.generate');
     Route::put('/stores/{store}/applications/shopify/secret', [StoreController::class, 'updateWebhookSecret'])->name('stores.shopify.updateSecret');
+    Route::put('/stores/{store}/webhook-secret', [StoreController::class, 'updateWebhookSecret'])->name('stores.updateWebhookSecret');
     Route::delete('/stores/{store}/applications/shopify/secret', [StoreController::class, 'deleteWebhookSecret'])->name('stores.shopify.deleteSecret');
     
     // AJAX: Generate webhook secret automatically
@@ -98,6 +99,7 @@ Route::get('/shopify/callback', [ShopifyController::class, 'callback'])->name('s
 
 // Shopify webhook route (public - for receiving orders from Shopify)
 Route::post('/webhook/shopify/orders', [ShopifyController::class, 'handleWebhookOrder'])->name('shopify.webhook.order');
+Route::post('/webhooks/shopify/orders', [ShopifyWebhookController::class, 'handleOrders'])->name('shopify.webhooks.orders');
 
 // Token-based webhook route - NEW: /webhook/shopify/order/{store_token}/creation
 Route::post('/webhook/shopify/order/{store_token}/creation', [ShopifyWebhookController::class, 'handleOrderCreation'])

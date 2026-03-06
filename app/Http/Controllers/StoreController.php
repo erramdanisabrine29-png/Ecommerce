@@ -160,30 +160,42 @@ public function updateWebhookSecret(Request $request, Store $store)
 {
     $this->authorize('update', $store);
 
+    // DEBUG: Log incoming request
+    Log::debug('updateWebhookSecret called', [
+        'store_id' => $store->id,
+        'request_all' => $request->all(),
+    ]);
+
+    // TEMPORARY DEBUG: Dump all request data
+    dd($request->all());
+
     $validated = $request->validate([
-        'webhook_secret' => 'required|string|min:20|max:255',
+        'webhook_secret' => 'required|string|min:1|max:500',
     ]);
 
     try {
         // Generate store_token if not exists
-        if (!$store->store_token) {
+        if (empty($store->store_token)) {
             $store->store_token = Store::generateUniqueStoreToken();
             $store->save();
         }
 
-        // Use the model's setWebhookSecret method which stores both plain and encrypted
-        $store->setWebhookSecret($validated['webhook_secret']);
+        // Direct update - store both plain and encrypted
+        $encryptedSecret = encrypt($validated['webhook_secret']);
         
-        // Mark store as connected
-        $store->markAsConnected();
+        $store->update([
+            'webhook_secret' => $validated['webhook_secret'],
+            'webhook_secret_encrypted' => $encryptedSecret,
+            'connected' => true,
+            'shopify_connected_at' => now(),
+        ]);
 
         Log::info('Webhook secret configured successfully for store: ' . $store->id, [
             'webhook_secret_length' => strlen($validated['webhook_secret']),
             'connected' => $store->fresh()->connected,
         ]);
 
-        return redirect()->route('stores.shopify.config', $store->id)
-            ->with('success', 'Webhook secret configuré avec succès. Boutique Shopify connectée !');
+        return back()->with('success', 'Store successfully connected to Shopify');
 
     } catch (\Exception $e) {
         Log::error('Error configuring webhook secret for store: ' . $store->id, [
@@ -191,8 +203,7 @@ public function updateWebhookSecret(Request $request, Store $store)
             'trace' => $e->getTraceAsString()
         ]);
 
-        return redirect()->route('stores.shopify.config', $store->id)
-            ->with('error', 'Erreur lors de la configuration: ' . $e->getMessage());
+        return back()->with('error', 'Erreur lors de la configuration: ' . $e->getMessage());
     }
 }
 

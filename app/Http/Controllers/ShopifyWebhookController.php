@@ -33,6 +33,81 @@ class ShopifyWebhookController extends Controller
     const TOPIC_HEADER = 'X-Shopify-Topic';
 
     /**
+     * Handle orders webhook from Shopify (alternative endpoint).
+     * 
+     * Route: POST /webhooks/shopify/orders
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function handleOrders(Request $request): JsonResponse
+    {
+        // Get shop domain from header
+        $shopDomain = $request->header(self::SHOP_DOMAIN_HEADER);
+
+        if (!$shopDomain) {
+            Log::warning('Shopify webhook received without shop domain header');
+            return response()->json(['error' => 'Missing shop domain'], 401);
+        }
+
+        // Find store by domain
+        $store = Store::where('shopify_domain', $shopDomain)->first();
+
+        if (!$store) {
+            Log::warning('Store not found for webhook. Domain: ' . $shopDomain);
+            return response()->json(['error' => 'Store not found'], 404);
+        }
+
+        // Verify HMAC
+        $hmacHeader = $request->header(self::HMAC_HEADER);
+        if (!$hmacHeader) {
+            return response()->json(['error' => 'Missing HMAC header'], 401);
+        }
+
+        $data = $request->getContent();
+        $webhookSecret = $store->getWebhookSecret();
+
+        if (!$webhookSecret) {
+            Log::warning('Webhook secret not configured for store: ' . $store->id);
+            return response()->json(['error' => 'Webhook secret not configured'], 401);
+        }
+
+        if (!$this->verifyHmac($data, $hmacHeader, $webhookSecret)) {
+            Log::warning('Invalid webhook HMAC for store: ' . $store->id);
+            return response()->json(['error' => 'Invalid signature'], 401);
+        }
+
+        // Parse payload
+        $payload = json_decode($data, true);
+        if (!$payload || !isset($payload['id'])) {
+            return response()->json(['error' => 'Invalid payload'], 400);
+        }
+
+        // Process order
+        try {
+            $shopifyOrderId = (string) $payload['id'];
+            $existingOrder = ShopifyOrder::findByShopifyId($shopifyOrderId, $store->id);
+
+            if ($existingOrder) {
+                $existingOrder->updateFromPayload($payload);
+                return response()->json(['success' => true, 'message' => 'Order updated'], 200);
+            }
+
+            $order = ShopifyOrder::createFromPayload($payload, $store->id);
+            
+            Log::info('Shopify order created via /webhooks/shopify/orders', [
+                'shopify_order_id' => $shopifyOrderId,
+                'store_id' => $store->id,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Order created', 'order_id' => $order->id], 200);
+        } catch (\Exception $e) {
+            Log::error('Error processing Shopify webhook: ' . $e->getMessage());
+            return response()->json(['error' => 'Internal server error'], 500);
+        }
+    }
+
+    /**
      * Handle order creation webhook from Shopify.
      * 
      * Route: POST /webhook/shopify/order/{store_token}/creation
